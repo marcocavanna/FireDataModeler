@@ -1,0 +1,30 @@
+{
+    "env": {
+      "node": true
+    },
+    "extends": "airbnb-base",
+    "rules": {
+      "comma-dangle": "off",
+      "padded-blocks": "off",
+      "no-trailing-spaces": "off",
+      "no-multi-spaces": "off",
+      "no-param-reassign": "off",
+      "no-underscore-dangle": "off",
+      "no-confusing-arrow": "off",
+      "max-len": ["error", { "code": 100, "ignoreComments": true, "ignoreStrings": true, "ignoreTemplateLiterals": true }],
+      "no-use-before-define": "off",
+      "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
+      "object-curly-newline": "off",
+      "prefer-promise-reject-errors": "off",
+      "no-nested-ternary": "off"
+    },
+    "globals": {
+      "_dataModeler": false,
+      "_firebaseAdmin": false,
+      "_pathReplacers": false,
+      "_bindings": false,
+      "_models": false,
+      "_functions": false,
+      "_filters": false
+    }
+}
