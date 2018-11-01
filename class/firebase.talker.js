@@ -126,6 +126,10 @@ class FirebaseTalker {
         _pathReplacers.set($replacers, self);
 
         return self;
+      },
+
+      get() {
+        return $exists ? $replacers[$idx].replace : null;
       }
     };
 
