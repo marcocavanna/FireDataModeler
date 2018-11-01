@@ -816,6 +816,12 @@ class FirebaseTalker {
               value.params.forEach($param => $args.push($parsed.$get($param)));
 
               /**
+               * Add Talker instance
+               * to arguments
+               */
+              $args.push(self);
+
+              /**
                * Search if source field is undefined
                * or null
                */
