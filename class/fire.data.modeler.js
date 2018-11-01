@@ -267,7 +267,7 @@ class FireDataModeler {
    * @param {Object} $configuration
    * @param {Object} [$configuration.credential] Firebase Admin Credential
    * @param {Object} [$configuration.adminInstance] An already loaded Firebase Admin Instance
-   * @param {String} $configuration.databaseURL URL Database for Firebase
+   * @param {String} [$configuration.databaseURL] URL Database for Firebase
    * @param {Array} [$configuration.pathReplacers=[]] An array of Path Replacers functions
    * 
    */
