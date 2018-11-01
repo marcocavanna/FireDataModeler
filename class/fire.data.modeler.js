@@ -292,7 +292,7 @@ class FireDataModeler {
      * then save it
      */
     if (adminInstance) {
-      return new FirebaseTalker(this, adminInstance, pathReplacers);
+      return new FirebaseTalker(this, adminInstance.database(), pathReplacers);
     }
 
     return new FirebaseTalker(this, firebaseAdmin.initializeApp({
