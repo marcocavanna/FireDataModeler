@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `1.1.0` - 2018-11-03
 ### `Added`
-- `$filter`: Can now use filters to change Model key<br><br>
+- [`<ae5344c>`](https://github.com/marcocavanna/FireDataModeler/commit/ae5344cba46063e21ee62f8910a11d4f249f9582) `$filter`: Can now use filters to change Model key<br><br>
   ```js
   Modeler.$model('Me', {
     model: {
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```
 
 ### `Fixed`
-- `this` keyword of Function Fields now refer correctly to the Model Parsed
+- [`<38d8a26>`](https://github.com/marcocavanna/FireDataModeler/commit/38d8a26bcc605aaaabdd4ed6e80fc73e71e20bcb) `this` keyword of Function Fields now refer correctly to the Model Parsed
 
 ## `1.0.2` - 2018-11-02
 ### `Added`
