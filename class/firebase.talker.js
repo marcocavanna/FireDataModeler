@@ -863,7 +863,12 @@ class FirebaseTalker {
                   /**
                    * Get the Result
                    */
-                  const $result = $function.apply(this, $args);
+                  const $result = $function.apply(
+                    $parsed instanceof FireDataObject
+                      ? $parsed.$build()
+                      : $parsed,
+                    $args
+                  );
     
                   /**
                    * Check if result is undefined
