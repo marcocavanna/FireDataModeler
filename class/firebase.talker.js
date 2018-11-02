@@ -2,7 +2,6 @@
 /**
  * Require External Modules
  */
-
 const _dataReparse = new WeakMap();
 
 /**
@@ -11,6 +10,13 @@ const _dataReparse = new WeakMap();
 const FireDataObject = require('../class/fire.data.object');
 const FireDataError = require('../utils/fire.data.error');
 const escapeRegExp = require('../utils/escape.regexp');
+
+/**
+ * Constant
+ */
+const CONST = {
+  ID_REGEX: /(?:(?!\/)|^)(\$id)(?=\/|$)/
+};
 
 class FirebaseTalker {
 
@@ -59,6 +65,19 @@ class FirebaseTalker {
         functionName: '$path',
         error: 'invalid-placeholder',
         message: `Placeholder string must contain only Characters. Found ${find}`
+      }).message;
+    }
+
+    /**
+     * $id placeholder cannot be used
+     * as is a system placeholder
+     */
+    if (find === 'id') {
+      throw new FireDataError({
+        $modelName: 'root',
+        functionName: '$path',
+        error: 'invalid-placeholder',
+        message: 'System protected placeholder found : \'id\' placholder cannot be changed.'
       }).message;
     }
 
@@ -1138,10 +1157,12 @@ class FirebaseTalker {
         /**
          * Load the Read Path
          */
-        const $path = parseFirebaseReference(
-          self, $father ? $father.paths.read : $model.paths.read
-        );
         const $hasID = $father ? $father.paths.hasID : $model.paths.hasID;
+
+        const $path = parseFirebaseReference(
+          self, $father ? $father.paths.read : $model.paths.read,
+          { $hasID, $id }
+        );
 
         /**
          * If path has an ID, then check $id exists
@@ -1163,14 +1184,7 @@ class FirebaseTalker {
         /**
          * Load the reference
          */
-        let $reference = $firebase.ref($path);
-
-        /**
-         * If there is ID, than set child reference
-         */
-        if ($hasID) {
-          $reference = $reference.child($id);
-        }
+        const $reference = $firebase.ref($path);
 
         /**
          * Load data from Database
@@ -1274,6 +1288,20 @@ class FirebaseTalker {
         error: 'invalid-function',
         functionName: '$add',
         message: `Model '${$modelName}' is a non-ID based model. Use $set function to set data on Database instead of the $add function`
+      }));
+    }
+
+    /**
+     * Stop process if Path has the $id placeholder
+     * to avoid object nesting
+     * TODO: Get the possibility to set using $set function
+     */
+    if (CONST.ID_REGEX.test($model.paths.read)) {
+      return () => Promise.reject(new FireDataError({
+        $modelName,
+        error: 'invalid-path',
+        functionName: '$add',
+        message: `Model ${$modelName} is a ID-Based but it's read/write path is a child of the ID and cannot be used to $add data.`
       }));
     }
 
@@ -2197,7 +2225,7 @@ function buildSourceString($source) {
  * Use the setted replacer to parse and build the path
  * 
  */
-function parseFirebaseReference($this, $path) {
+function parseFirebaseReference($this, $path, { $hasID = false, $id } = {}) {
   /**
    * Get Replacers
    */
@@ -2209,6 +2237,24 @@ function parseFirebaseReference($this, $path) {
   _replacers.forEach(($replacer) => {
     $path = $path.replace(new RegExp(escapeRegExp($replacer.find), $replacer.caseSensitive ? 'g' : 'gi'), $replacer.replace);
   });
+
+  /**
+   * Replace starting or ending slash
+   */
+  $path = $path.replace(/^\/|\/$/g, '');
+
+  /**
+   * If path has ID, replace the ID
+   * or search for id placeholder
+   */
+  if ($hasID && typeof $id === 'string') {
+    if (CONST.ID_REGEX.test($path)) {
+      $path = $path.replace(CONST.ID_REGEX, $id);
+    }
+    else {
+      $path = `${$path}/${$id}`;
+    }
+  }
 
   /**
    * Search if there is some undefined
@@ -2232,7 +2278,7 @@ function parseFirebaseReference($this, $path) {
   /**
    * Remove first and last slash if exists
    */
-  return $path.replace(/^\/|\/$/g, '');
+  return $path;
 
 }
 
