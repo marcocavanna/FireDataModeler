@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `1.0.2` - 2018-11-02
 ### `Added`
-- [`<580ce115>`](https://github.com/marcocavanna/FireDataModeler/#)  This CHANGELOG file to keep change updated
-- [`<580ce115>`](https://github.com/marcocavanna/FireDataModeler/#) `$id` can be added in path to get and parse child data, a this moment, id placeholder inside path string can be used in `$get` functions only and will produce an error while `$add` or `$set` data<br><br>
+- [`<e530e0f>`](https://github.com/marcocavanna/FireDataModeler/commit/e530e0f89ee4083e0ea5186b78f6a0d672ed6047)  This CHANGELOG file to keep change updated
+- [`<580ce11>`](https://github.com/marcocavanna/FireDataModeler/commit/580ce115856bbd02df29f512d1576320606c969e) `$id` can be added in path to get and parse child data, a this moment, id placeholder inside path string can be used in `$get` functions only and will produce an error while `$add` or `$set` data<br><br>
   ```js
   Modeler.$model('UserDetail', {
     model: {
