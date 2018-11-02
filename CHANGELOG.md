@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.0.4` - 2018-11-03
+### `Added`
+- `$filter`: Can now use filters to change Model key<br><br>
+  ```js
+  Modeler.$model('Me', {
+    model: {
+      name: '?String|toUpperCase',
+      surname: '?String|toUpperCase'
+    }
+  })
+
+  Modeler.$filter('toUpperCase', $str => $str.toUpperCase());
+  ```
+
+### `Fixed`
+- `this` keyword of Function Fields now refer correctly to the Model Parsed
+
 ## `1.0.2` - 2018-11-02
 ### `Added`
 - [`<e530e0f>`](https://github.com/marcocavanna/FireDataModeler/commit/e530e0f89ee4083e0ea5186b78f6a0d672ed6047)  This CHANGELOG file to keep change updated
