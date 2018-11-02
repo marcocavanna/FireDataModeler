@@ -288,12 +288,21 @@ class FirebaseTalker {
             const $firebase = _firebaseAdmin.get(self);
             const $promises = [];
             const $functionField = [];
+            const $filterField = [];
 
             /**
              * For each model key, parse and get the
              * correct value
              */
             $model._keys.$each(({ path, value }) => {
+
+              /**
+               * If the Field has a Filter
+               * then append to Filters array
+               */
+              if (value.filters.length) {
+                $filterField.push({ path, value });
+              }
 
               /**
                * If request value isn't a Model value
@@ -799,7 +808,7 @@ class FirebaseTalker {
              * promises before resolve
              */
             return Promise.all($promises)
-              .then(() => resolveParsing({ $parsed, $functionField }))
+              .then(() => resolveParsing({ $parsed, $functionField, $filterField }))
               .catch(rejectParsing);
 
           }))
@@ -808,7 +817,11 @@ class FirebaseTalker {
            * Phase 3.
            * Evaluate the Functions fields
            */
-          .then(({ $parsed, $functionField = [] }) => new Promise((resolveFn, rejectFn) => {
+          .then(({
+            $parsed,
+            $functionField = [],
+            $filterField = []
+          }) => new Promise((resolveFn, rejectFn) => {
             /**
              * Apply all function field to the parsed model
              */
@@ -924,12 +937,107 @@ class FirebaseTalker {
             /**
              * Resolve the Phase
              */
-            return resolveFn($parsed);
+            return resolveFn(({ $parsed, $filterField }));
+
+          }))
+          /**
+           * Phase 6.
+           * Evaluate Filters
+           */
+          .then(({ $parsed, $filterField = [] }) => new Promise((resolveFilters, rejectFilters) => {
+            /**
+             * Loop field that has to be filtered
+             */
+            $filterField.forEach(({ path, value }) => {
+              /**
+               * Loop all filters for the field
+               */
+              value.filters.forEach(($filter) => {
+                /**
+                 * Parse the filter
+                 */
+                const [filter, allParams] = $filter.split(':');
+                const [...params] = typeof allParams === 'string'
+                  ? allParams.replace(/,\s/g, ',').split(',')
+                  : [];
+
+                /**
+                 * Get the Filter Function
+                 */
+                const $function = loadFilter(self, filter);
+
+                /**
+                 * Check function exists
+                 */
+                if (typeof $function !== 'function') {
+                  return rejectFilters(new FireDataError({
+                    $modelName,
+                    error: 'invalid-filter-name',
+                    functionName: '$parse -> compileFilter',
+                    message: `Value for '${path}' require filter '${value.variable}' but doens't exists`,
+                    data: { name: value._original }
+                  }));
+                }
+
+                /**
+                 * Build Args
+                 */
+                const $args = [$parsed.$get(path)];
+
+                params.forEach($param => $args.push($param));
+
+                /**
+                 * Add Talker Instance
+                 * to Arguments
+                 */
+                $args.push(self);
+
+                /**
+                 * Get filter result
+                 */
+                const $result = $function.apply(
+                  $parsed instanceof FireDataObject
+                    ? $parsed.$build()
+                    : $parsed,
+                  $args
+                );
+
+                /**
+                 * Set the Result
+                 */
+                const isUndefined = $result === null || $result === undefined;
+
+                /**
+                 * Check if result is required
+                 */
+                if (isUndefined && value.required) {
+                  return rejectFilters(new FireDataError({
+                    $modelName,
+                    error: 'invalid-filter-result',
+                    functionName: '$parse -> compileFilters',
+                    message: `Value for '${path}' is required but got undefined`,
+                    data: { name: value._original }
+                  }));
+                }
+
+                /**
+                 * Set Data
+                 */
+                return $parsed.$set(path, isUndefined ? null : $result);
+
+              });
+
+            });
+
+            /**
+             * Resolve the Phase
+             */
+            return resolveFilters($parsed);
 
           }))
 
           /**
-           * Phase 4.
+           * Phase 5.
            * Validate Data using validators array
            */
           .then($parsed => new Promise((resolveValidators, rejectValidators) => {
@@ -970,7 +1078,7 @@ class FirebaseTalker {
           }))
 
           /**
-           * Phase 5.
+           * Phase 6.
            * Format data using formatters array
            */
           .then($parsed => new Promise((resolveFormatting) => {
@@ -2187,6 +2295,11 @@ function loadModel($this, $name) {
 
 function loadFunction($this, $name) {
   return _functions.get(_dataModeler.get($this))[$name];
+}
+
+
+function loadFilter($this, $name) {
+  return _filters.get(_dataModeler.get($this))[$name];
 }
 
 

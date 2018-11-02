@@ -37,37 +37,34 @@ function parseDataType($data) {
   /**
    * Create RegExp and parse Data
    */
-  const $regExp = $data.indexOf(':') !== -1 ? /^(!|\?)?(>|=)?(\^)?(.+(?=:))(?:(?::)(.+))?/ : /^(!|\?)?(>|=)?(\^)?(.+)$/;
+  const [variableDescription, ...filter] = $data.split('|');
+  const [description, paramsDescription] = variableDescription.split(':');
+
+  const [...params] = typeof paramsDescription === 'string'
+    ? paramsDescription.replace(/,\s/g, ',').split(',')
+    : [];
 
   /**
    * If no match throw an Error
    */
-  const $match = $data.match($regExp);
-
-  if (!$match) {
+  if (!description) {
     throw new Error('[ FireDataModeler ] - parseDataType : Invalid $data String');
   }
 
   /**
    * Split Matched value
    */
-  const [input, required, bind, autoCast, variable, params] = $match;
-  
+  const [input, required, bind, autoCast, variable] = description.match(/^(!|\?)?(>|=)?(\^)?(.+)$/); // eslint-disable-line
+
   const isFunction = /\(\)$/.test(variable);
   const isModel = !/^(string|number|boolean|object|array)$/i.test(variable) && !isFunction;
   let variableName = variable.replace(/\(\)$/, '');
-  let getThisFirst;
 
   let isModelArray = false;
 
   if (isModel && /^\[.+\]$/.test(variableName)) {
     isModelArray = true;
     variableName = variableName.replace(/^\[|\]$/g, '');
-  }
-
-  if (/^this\|\|/.test(variableName)) {
-    getThisFirst = true;
-    variableName = variableName.replace(/^this\|\|/, '');
   }
 
   /**
@@ -78,20 +75,20 @@ function parseDataType($data) {
   }
 
   const $dataType = {
-    _original: input,
-    required: required === '!',
-    reference: bind === '>' && (isFunction || isModel),
-    bind: bind === '=' && (isFunction || isModel),
+    _original: $data,
+    variable: variableName,
     autoCast: !!autoCast,
     isPrimitive: !!/^(string|number|boolean)$/i.test(variable) && !isFunction,
     isArray: !!/^array$/i.test(variable) && !isFunction,
     isObject: !!/^object$/i.test(variable) && !isFunction,
     isModel,
-    isFunction,
     isModelArray,
-    getThisFirst: !!getThisFirst,
-    variable: variableName,
-    params: typeof params === 'string' && (isFunction || isModel) ? params.replace(/,\s/g, ',').split(',') : []
+    isFunction,
+    required: required === '!',
+    reference: bind === '>' && (isFunction || isModel),
+    bind: bind === '=' && (isFunction || isModel),
+    params,
+    filters: filter.slice()
   };
 
   /**
