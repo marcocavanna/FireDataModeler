@@ -1,6 +1,6 @@
 {
   "name": "@mooxed/fire-data-modeler",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "FireData Modeler is a Node.JS module that will help you to create and model the data as you want on Firebase Realtime Database. With FireData Modeler you can choose exactly what do you want to save into your Database and how you can want to save it. You can apply validators and formatters to your data, that will be executed always and help you to get safe data to send to Firebase",
   "main": "index.js",
   "dependencies": {
