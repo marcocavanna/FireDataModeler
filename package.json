@@ -1,22 +1,20 @@
 {
-  "name": "@mooxed/fire-data-modeler",
-  "version": "1.1.0",
-  "description": "FireData Modeler is a Node.JS module that will help you to create and model the data as you want on Firebase Realtime Database. With FireData Modeler you can choose exactly what do you want to save into your Database and how you can want to save it. You can apply validators and formatters to your data, that will be executed always and help you to get safe data to send to Firebase",
-  "main": "index.js",
+  "author": {
+    "name": "Marco Cavanna",
+    "email": "info@marcocavanna.com"
+  },
+  "bugs": {
+    "url": "https://github.com/marcocavanna/FireDataModeler/issues"
+  },
   "dependencies": {
     "firebase-admin": "^6.0.0"
   },
+  "deprecated": false,
+  "description": "FireData Modeler is a Node.JS module that will help you to create and model the data as you want on Firebase Realtime Database. With FireData Modeler you can choose exactly what do you want to save into your Database and how you can want to save it. You can apply validators and formatters to your data, that will be executed always and help you to get safe data to send to Firebase",
   "devDependencies": {
     "eslint": "^5.7.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/marcocavanna/FireDataModeler.git"
   },
   "keywords": [
     "Object",
@@ -24,10 +22,16 @@
     "Firebase",
     "Database"
   ],
-  "author": "Marco Cavanna",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/marcocavanna/FireDataModeler/issues"
+  "main": "index.js",
+  "name": "@mooxed/fire-data-modeler",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcocavanna/FireDataModeler.git"
   },
-  "homepage": "https://github.com/marcocavanna/FireDataModeler#readme"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "https://github.com/marcocavanna/FireDataModeler#readme",
+  "version": "1.2.0"
 }
