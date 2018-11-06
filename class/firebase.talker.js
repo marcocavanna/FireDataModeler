@@ -823,7 +823,13 @@ class FirebaseTalker {
             $filterField = []
           }) => new Promise((resolveFn, rejectFn) => {
             /**
-             * Apply all function field to the parsed model
+             * To let user use promises function
+             * must create a promises array
+             */
+            const $promises = [];
+
+            /**
+             * Loop all function fields
              */
             $functionField.forEach(({ path, value }) => {   //eslint-disable-line
               /**
@@ -874,48 +880,81 @@ class FirebaseTalker {
                  */
                 if (sourceUndefined || value.bind) {
                   /**
-                   * Get the Result
+                   * Append Promise even if is not a promise
                    */
-                  const $result = $function.apply(
-                    $parsed instanceof FireDataObject
-                      ? $parsed.$build()
-                      : $parsed,
-                    $args
+                  $promises.push(
+                    new Promise((resolveFnPromise, rejectFnPromise) => {
+                      /**
+                       * Use an Async function to wrap the result
+                       */
+                      const $exec = async function waitResult() {
+                        /**
+                         * Wait the Result
+                         */
+                        const $result = await $function.apply(
+                          $parsed instanceof FireDataObject
+                            ? $parsed.$build()
+                            : $parsed,
+                          $args
+                        );
+
+                        return $result;
+
+                      };
+
+                      /**
+                       * Wrap the function into a Promise
+                       */
+                      $exec()
+                        .then(($result) => {
+
+                          /**
+                           * Check if result is undefined
+                           */
+                          const isUndefined = $result === undefined || $result === null;
+                    
+                          /**
+                           * Check if result is required
+                           */
+                          if (isUndefined && value.required) {
+                            return rejectFn(new FireDataError({
+                              $modelName,
+                              error: 'invalid-function-result',
+                              functionName: '$parse compileFunctions',
+                              message: `Value for '${path}' is required but got undefined`,
+                              data: { name: value._original }
+                            }));
+                          }
+
+                          /**
+                           * Set Data
+                           */
+                          if (!isUndefined) {
+                            $parsed.$set(path, $result);
+                          }
+                    
+                          else if (!omitNull) {
+                            /**
+                             * Save null value only if must not omit
+                             */
+                            $parsed.$set(path, null);
+                          }
+
+                          return resolveFnPromise();
+
+                        })
+                        .catch(original => rejectFnPromise(new FireDataError({
+                          $modelName,
+                          error: 'function-promise-rejected',
+                          functionName: '$parse compileFunction functionPromise',
+                          message: `An error occured while executing function for ${path}`,
+                          original
+                        })));
+
+                    })
                   );
-    
-                  /**
-                   * Check if result is undefined
-                   */
-                  const isUndefined = $result === undefined || $result === null;
-    
-                  /**
-                   * Check if result is required
-                   */
-                  if (isUndefined && value.required) {
-                    return rejectFn(new FireDataError({
-                      $modelName,
-                      error: 'invalid-function-result',
-                      functionName: '$parse compileFunctions',
-                      message: `Value for '${path}' is required but got undefined`,
-                      data: { name: value._original }
-                    }));
-                  }
-    
-                  /**
-                   * Set Data
-                   */
-                  if (!isUndefined) {
-                    $parsed.$set(path, $result);
-                  }
-    
-                  else if (!omitNull) {
-                    /**
-                     * Save null value only if must not omit
-                     */
-                    $parsed.$set(path, null);
-                  }
                 }
-  
+
                 else if (!sourceUndefined) {
                   $parsed.$set(path, $source);
                 }
@@ -935,9 +974,12 @@ class FirebaseTalker {
             });
 
             /**
-             * Resolve the Phase
+             * Resolve the Phase after all promises
+             * have been resolved
              */
-            return resolveFn({ $parsed, $filterField });
+            return Promise.all($promises)
+              .then(() => resolveFn({ $parsed, $filterField }))
+              .catch(rejectFn);
 
           }))
           /**
