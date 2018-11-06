@@ -42,6 +42,12 @@ class FireDataModeler {
    * @param {String} $constructor.validators[].e Error to throw
    * @param {Function} $constructor.validators[].checker Function to Execute to Validate Model
    * 
+   * @param {Function[]} [$constructor.onAdd] A series of function to execute on Add Process
+   * @param {Function[]} [$constructor.onSet] A series of function to execute on Set Process
+   * @param {Function[]} [$constructor.onGet] A series of function to execute on Get Process
+   * @param {Function[]} [$constructor.onUpdate] A series of function to execute on Update Process
+   * @param {Function[]} [$constructor.onDelete] A series of function to execute on Delete Process
+   * 
    * @param {Object} [$constructor.paths] Firebase Path Builder
    * @param {Boolean} [$constructor.paths.hasID=true] If the Model is an Array of Object into Firebase
    * @param {Object} $constructor.paths.read The Main Read Reference for the Model
@@ -464,10 +470,24 @@ function buildModel({ $name, $constructor, $isExtractor = false, $isParser = fal
     model: $isExtractor ? extract : model,
     validators: Array.isArray(validators) ? validators.slice() : [],
     paths,
-    formatters: Array.isArray(formatters) ? formatters.slice() : []
+    formatters: Array.isArray(formatters) ? formatters.slice() : [],
+    hooks: {}
   };
 
+  /**
+   * Add Hook Functions
+   */
+  ['onAdd', 'onSet', 'onGet', 'onUpdate', 'onDelete'].forEach(($field) => {
+    $newModel.hooks[$field] = getHookFunction($field);
+  });
+
   return $newModel;
+
+  function getHookFunction($field) {
+    return !$isExtractor && !$isParser && Array.isArray($constructor[$field])
+      ? $constructor[$field].slice()
+      : [];
+  }
 
 }
 
