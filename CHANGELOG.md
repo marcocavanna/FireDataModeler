@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.0` - 2018-11-06
+### `Added`
+- [`<e2981b4>`](https://github.com/marcocavanna/FireDataModeler/commit/e2981b4ab86cf72efa2ae12af7f20e1e3040c57f) Added the possibility to set some Hook function (sync/async), like __onAdd__, __onSet__, __onUpdate__, __onDelete__ and __orGet__ that will be executed before database operation. This function have to be inserted into the Model declaration, have to be an Array of Function and all are executed at the same time.
+If one of the function is a Promise than the database action will wait untill promise will be resolved. If promise will be rejected no database action will be performed.<br><br>
+```js
+  Modeler.$model('Me', {
+    model: {
+      name: '?String|toUpperCase',
+      surname: '?String|toUpperCase'
+    },
+    paths: {
+      hasID: true,
+      read: 'team/$team/contact'
+    },
+    onAdd: [
+      ($data, $id) => {
+        console.log(`I'm adding Data with ID ${$id}`, $data)
+      }
+    ]
+  })
+```
+
+### `Changed`
+- [`<849c8c3>`](https://github.com/marcocavanna/FireDataModeler/commit/849c8c3649a73c17f46734205e55d331f8250e7c) Functions Fields could now be asyncronous. Parsing data will wait for function resolution before continue process
+
+### `Fixed`
+- [`<0234ab0>`](https://github.com/marcocavanna/FireDataModeler/commit/0234ab01547bdb92e01e9bd571a6560075ba4e64) Fixed an error showing Error stack functions
+- [`<739a490>`](https://github.com/marcocavanna/FireDataModeler/commit/739a490af6fd72c3905039197eb49706076f40aa) Fixed an error occured using `error.original` getter that sometimes returned `undefined` value
+
 ## `1.1.0` - 2018-11-03
 ### `Added`
 - [`<ae5344c>`](https://github.com/marcocavanna/FireDataModeler/commit/ae5344cba46063e21ee62f8910a11d4f249f9582) `$filter`: Can now use filters to change Model key<br><br>
