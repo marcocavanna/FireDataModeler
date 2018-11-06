@@ -33,7 +33,7 @@ class FireDataError {
   }
 
   get original() {
-    return this.stack[0].name;
+    return this.stack[0].name || this.stack[0];
   }
 
   get main() {
