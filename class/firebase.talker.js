@@ -398,7 +398,7 @@ class FirebaseTalker {
                   throw new FireDataError({
                     $modelName,
                     error: `${path}-missing`,
-                    functionName: '$parse -> parseData',
+                    functionName: '$parse parseData',
                     message: `Value for '${path}' is required but got undefined`
                   });
                 }
@@ -407,7 +407,7 @@ class FirebaseTalker {
                   throw new FireDataError({
                     $modelName,
                     error: `${path}-error`,
-                    functionName: '$parse -> parseData',
+                    functionName: '$parse parseData',
                     message: `Value for '${path}' is required as '${value.variable}' but got '${typeof $source}'`
                   });
                 }
@@ -551,7 +551,7 @@ class FirebaseTalker {
                                 return rejectGetter(new FireDataError({
                                   $modelName,
                                   error: 'invalid-model-data',
-                                  functionName: '$parse -> loadFirebaseData',
+                                  functionName: '$parse loadFirebaseData',
                                   message: `Value for '${path}' require valid data for model '${value.variable}'`,
                                   data: { received: $parsedSource }
                                 }));
@@ -591,7 +591,7 @@ class FirebaseTalker {
                             .catch(original => rejectGetter(new FireDataError({
                               $modelName,
                               error: 'firebase-loading-error',
-                              functionName: '$parse -> loadFirebaseData',
+                              functionName: '$parse loadFirebaseData',
                               message: `An error occured while loading data for '${path}'`,
                               original
                             })));
@@ -629,7 +629,7 @@ class FirebaseTalker {
                     throw new FireDataError({
                       $modelName,
                       error: `${path}-missing`,
-                      functionName: '$parse -> parseData',
+                      functionName: '$parse parseData',
                       message: `Value for '${path}' is required but got undefined`
                     });
                   }
@@ -679,7 +679,7 @@ class FirebaseTalker {
                       throw new FireDataError({
                         $modelName,
                         error: `${path}-error`,
-                        functionName: '$parse -> parseData',
+                        functionName: '$parse parseData',
                         message: `Value for '${path}' is required as Array but got '${typeof $source}'`
                       });
                     }
@@ -838,7 +838,7 @@ class FirebaseTalker {
                 return rejectFn(new FireDataError({
                   $modelName,
                   error: 'invalid-function-name',
-                  functionName: '$parse -> compileFunctions',
+                  functionName: '$parse compileFunctions',
                   message: `Value for '${path}' require function '${value.variable}' but doens't exists`,
                   data: { name: value._original }
                 }));
@@ -895,7 +895,7 @@ class FirebaseTalker {
                     return rejectFn(new FireDataError({
                       $modelName,
                       error: 'invalid-function-result',
-                      functionName: '$parse -> compileFunctions',
+                      functionName: '$parse compileFunctions',
                       message: `Value for '${path}' is required but got undefined`,
                       data: { name: value._original }
                     }));
@@ -937,11 +937,11 @@ class FirebaseTalker {
             /**
              * Resolve the Phase
              */
-            return resolveFn(({ $parsed, $filterField }));
+            return resolveFn({ $parsed, $filterField });
 
           }))
           /**
-           * Phase 6.
+           * Phase 4.
            * Evaluate Filters
            */
           .then(({ $parsed, $filterField = [] }) => new Promise((resolveFilters, rejectFilters) => {
@@ -973,8 +973,8 @@ class FirebaseTalker {
                   return rejectFilters(new FireDataError({
                     $modelName,
                     error: 'invalid-filter-name',
-                    functionName: '$parse -> compileFilter',
-                    message: `Value for '${path}' require filter '${value.variable}' but doens't exists`,
+                    functionName: '$parse compileFilter',
+                    message: `Value for '${path}' require filter '${filter}' but doens't exists`,
                     data: { name: value._original }
                   }));
                 }
@@ -1014,7 +1014,7 @@ class FirebaseTalker {
                   return rejectFilters(new FireDataError({
                     $modelName,
                     error: 'invalid-filter-result',
-                    functionName: '$parse -> compileFilters',
+                    functionName: '$parse compileFilters',
                     message: `Value for '${path}' is required but got undefined`,
                     data: { name: value._original }
                   }));
@@ -1065,7 +1065,7 @@ class FirebaseTalker {
               return rejectValidators(new FireDataError({
                 $modelName,
                 error: $error,
-                functionName: '$parse -> validateModel',
+                functionName: '$parse validateModel',
                 message: 'Custom field error'
               }));
             }
@@ -1185,7 +1185,7 @@ class FirebaseTalker {
             throw new FireDataError({
               $extractorName,
               error: `${path}-missing`,
-              functionName: '$extract -> extractData',
+              functionName: '$extract extractData',
               message: `Value for '${path}' is required but got undefined`
             });
           }
@@ -1940,7 +1940,7 @@ class FirebaseTalker {
                             original => rejectQuery(new FireDataError({
                               $modelName,
                               error: 'database-query-error',
-                              functionName: '$parse -> evalQuery',
+                              functionName: '$parse evalQuery',
                               message: `Error on loading data for path '${$path.ref}' ordered by '${$path.queryOn}'`,
                               original,
                               data: { path: $path }
@@ -2158,7 +2158,7 @@ class FirebaseTalker {
                   original => rejectQuery(new FireDataError({
                     $modelName,
                     error: 'database-query-error',
-                    functionName: '$parse -> evalQuery',
+                    functionName: '$parse evalQuery',
                     message: `Error on loading data for path '${$path._original}' ordered by '${$path.queryOn}'`,
                     original,
                     data: { path: $path }
