@@ -2182,6 +2182,8 @@ class FirebaseTalker {
                */
               .then(() => $firebase.ref().update($updater.$keyMap()))
 
+              .then(resolve)
+
               .catch(original => reject(new FireDataError({
                 $modelName,
                 error: 'update-data-error',
