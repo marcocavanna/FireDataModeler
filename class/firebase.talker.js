@@ -2253,15 +2253,33 @@ class FirebaseTalker {
          */
         const $hasID = $model.paths.hasID;
 
+        const $ids = [];
+
+        /**
+         * If ID is a String then convert
+         * into an Array
+         */
+        if (typeof $id === 'string') {
+          $ids.push($id);
+        }
+
+        /**
+         * Else if is an Array, place all ID
+         * into the $ids array
+         */
+        else if (Array.isArray($id)) {
+          $id.forEach($single => $ids.push($single));
+        }
+
         /**
          * Check ID exists
          */
-        if ($hasID && typeof $id !== 'string') {
+        if ($hasID && !Array.isArray($id)) {
           throw new FireDataError({
             $modelName,
             error: 'invalid-id',
             functionName: '$delete',
-            message: `Write path for Model '${$modelName}' requires an ID`
+            message: `Write path for Model '${$modelName}' requires one or more IDs`
           });
         }
 
@@ -2270,15 +2288,6 @@ class FirebaseTalker {
          */
         const $paths = clonePathsArray($model.paths.writes).map(($path) => {
           $path.ref = parseFirebaseReference(self, $path.ref);
-
-          /**
-           * Append ID if ref is ID Based
-           */
-          if ($hasID) {
-            $path._original = $path.ref;
-            $path.ref = `${$path.ref}/${$id}`;
-          }
-
           return $path;
         });
 
@@ -2317,76 +2326,81 @@ class FirebaseTalker {
               /**
                * Generate the updater key
                */
-              $updater[$path.ref] = null;
+              $ids.forEach(($singleID) => {
+                $updater[`${$path.ref}/${$singleID}`] = null;
+              });
+
             }
 
             /**
              * Else, must build a query
              */
             else {
-              $updatePromises.push(
-                new Promise((resolveQuery, rejectQuery) => {
-                  /**
-                   * Get paths
-                   */
-                  const $updatePaths = [$path._original];
-
-                  /**
-                   * Get reference model path, if exists
-                   */
-                  if (typeof $path.referenceModel === 'string') {
+              $ids.forEach(($singleID) => {
+                $updatePromises.push(
+                  new Promise((resolveQuery, rejectQuery) => {
                     /**
-                     * Load reference Model
+                     * Get paths
                      */
-                    const $referenceModel = loadModel(self, $path.referenceModel);
-
-                    if ($referenceModel) {
-                      $referenceModel.paths.writes.slice()
-                        .filter(rPath => !rPath.queryOn && $updatedPath.indexOf(rPath.ref) === -1)
-                        .forEach((rPath) => {
-                          $updatePaths.push(parseFirebaseReference(self, rPath.ref));
-                        });
-                    }
-                  }
-
-                  $firebase.ref($path._original).orderByChild($path.queryOn).equalTo($id).once('value', ($snapshots) => {
+                    const $updatePaths = [$path.ref];
+  
                     /**
-                     * For Each Snapshots found, build the update key
+                     * Get reference model path, if exists
                      */
-                    $snapshots.forEach(($snap) => {
+                    if (typeof $path.referenceModel === 'string') {
                       /**
-                       * Check if must filter snapshot
+                       * Load reference Model
                        */
-                      if (typeof $path.snapFilter === 'function') {
-                        if (!$path.snapFilter($snap)) return;
+                      const $referenceModel = loadModel(self, $path.referenceModel);
+  
+                      if ($referenceModel) {
+                        $referenceModel.paths.writes.slice()
+                          .filter(rPath => !rPath.queryOn && $updatedPath.indexOf(rPath.ref) === -1)
+                          .forEach((rPath) => {
+                            $updatePaths.push(parseFirebaseReference(self, rPath.ref));
+                          });
                       }
-
+                    }
+  
+                    $firebase.ref($path.ref).orderByChild($path.queryOn).equalTo($singleID).once('value', ($snapshots) => {
                       /**
-                       * Create Updater Path for this Snapshot
+                       * For Each Snapshots found, build the update key
                        */
-                      $updatePaths.forEach(($updatePath) => {
-                        $updater[`${$updatePath}/${$snap.key}/${$path.writeChild}`] = null;
-                        $updater[`${$updatePath}/${$snap.key}/${$path.queryOn}`] = null;
+                      $snapshots.forEach(($snap) => {
+                        /**
+                         * Check if must filter snapshot
+                         */
+                        if (typeof $path.snapFilter === 'function') {
+                          if (!$path.snapFilter($snap)) return;
+                        }
+  
+                        /**
+                         * Create Updater Path for this Snapshot
+                         */
+                        $updatePaths.forEach(($updatePath) => {
+                          $updater[`${$updatePath}/${$snap.key}/${$path.writeChild}`] = null;
+                          $updater[`${$updatePath}/${$snap.key}/${$path.queryOn}`] = null;
+                        });
                       });
-                    });
-
-                    /**
-                     * Resolve query updater
-                     */
-                    return resolveQuery();
-
-                  },
-
-                  original => rejectQuery(new FireDataError({
-                    $modelName,
-                    error: 'database-query-error',
-                    functionName: '$parse evalQuery',
-                    message: `Error on loading data for path '${$path._original}' ordered by '${$path.queryOn}'`,
-                    original,
-                    data: { path: $path }
-                  })));
-                })
-              );
+  
+                      /**
+                       * Resolve query updater
+                       */
+                      return resolveQuery();
+  
+                    },
+  
+                    original => rejectQuery(new FireDataError({
+                      $modelName,
+                      error: 'database-query-error',
+                      functionName: '$parse evalQuery',
+                      message: `Error on loading data for path '${$path._original}' ordered by '${$path.queryOn}' for ID: ${$singleID}`,
+                      original,
+                      data: { path: $path }
+                    })));
+                  })
+                );
+              });
             }
           }
         });
