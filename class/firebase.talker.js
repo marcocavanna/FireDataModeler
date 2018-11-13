@@ -1529,7 +1529,7 @@ class FirebaseTalker {
     /**
      * Return the Add Function
      */
-    return function addFirebaseData($data) {
+    return function addFirebaseData($data, { id }) {
       /**
        * Parse data to Add
        */
@@ -1548,7 +1548,7 @@ class FirebaseTalker {
         /**
          * Get a new Firebase ID
          */
-        const $id = $firebase.ref($mainPath).push().key;
+        const $id = id || $firebase.ref($mainPath).push().key;
         const $updater = {};
 
         /**
