@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.1` - 2018-11-13
+### `Changed`
+- [`<06f667e>`](https://github.com/marcocavanna/FireDataModeler/commit/06f667e61d47fee4b51d527e710a7ec831e67add) Delete function now accept an Array of IDS to delete multiple data from database
+
 ## `1.2.0` - 2018-11-06
 ### `Added`
 - [`<e2981b4>`](https://github.com/marcocavanna/FireDataModeler/commit/e2981b4ab86cf72efa2ae12af7f20e1e3040c57f) Added the possibility to set some Hook function (sync/async), like __onAdd__, __onSet__, __onUpdate__, __onDelete__ and __orGet__ that will be executed before database operation. This function have to be inserted into the Model declaration, have to be an Array of Function and all are executed at the same time.
