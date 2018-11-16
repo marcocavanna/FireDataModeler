@@ -39,7 +39,7 @@ class FireDataModeler {
    * @param {Object} $constructor.model Model to use
    * 
    * @param {Object[]} [$constructor.validators] Array of Model Validators
-   * @param {String} $constructor.validators[].e Error to throw
+   * @param {String} $constructor.validators[].error Error to throw
    * @param {Function} $constructor.validators[].checker Function to Execute to Validate Model
    * 
    * @param {Function[]} [$constructor.onAdd] A series of function to execute on Add Process
@@ -50,7 +50,7 @@ class FireDataModeler {
    * 
    * @param {Object} [$constructor.paths] Firebase Path Builder
    * @param {Boolean} [$constructor.paths.hasID=true] If the Model is an Array of Object into Firebase
-   * @param {Object} $constructor.paths.read The Main Read Reference for the Model
+   * @param {String} $constructor.paths.read The Main Read Reference for the Model
    * @param {Object[]} $constructor.paths.writes References to use
    * @param {String} $constructor.paths.writes[].ref The reference into write the model on update
    * @param {String} [$constructor.paths.writes[].queryOn] If Child must be queryed than add the child key to use with query
