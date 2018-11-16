@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.2` - 2018-11-16
+### `Added`
+- [`<95f4816>`](https://github.com/marcocavanna/FireDataModeler/commit/95f481687da564b66428499b07187a30ac77ea8e) Writed and added the ReadMe file
+
+### `Changed`
+- [`<10b56f1>`](https://github.com/marcocavanna/FireDataModeler/commit/10b56f1882df2e312de700b0920f55ff2aec1f50) $update function now return only the key updated
+- [`<62d83d4>`](https://github.com/marcocavanna/FireDataModeler/commit/62d83d46ed02a7479c3d9b1ee018c8c134c17289) Changed the execution of validators function. Now are not while getting data
+- 
+### `Fixed`
+- [`<404d99c>`](https://github.com/marcocavanna/FireDataModeler/commit/404d99cdec4dedc4b3ecef5a736af8fa247374ba) Fixed an Issue with Add Data ID parameters
+- [`<c5d8d5d>`](https://github.com/marcocavanna/FireDataModeler/commit/c5d8d5d7d4d57111954363fcffc6d9d2a8db618d) Fixed an Issue while using $id placeholder into `Paths` inf $update function
+
 ## `1.2.1` - 2018-11-13
 ### `Changed`
 - [`<06f667e>`](https://github.com/marcocavanna/FireDataModeler/commit/06f667e61d47fee4b51d527e710a7ec831e67add) Delete function now accept an Array of IDS to delete multiple data from database
