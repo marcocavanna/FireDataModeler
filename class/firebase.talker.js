@@ -1529,7 +1529,7 @@ class FirebaseTalker {
     /**
      * Return the Add Function
      */
-    return function addFirebaseData($data, { id }) {
+    return function addFirebaseData($data, { id } = {}) {
       /**
        * Parse data to Add
        */
