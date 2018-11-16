@@ -16,7 +16,10 @@
       "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
       "object-curly-newline": "off",
       "prefer-promise-reject-errors": "off",
-      "no-nested-ternary": "off"
+      "no-nested-ternary": "off",
+      "prefer-arrow-callback": "off",
+      "key-spacing": ["error", { "align": { "beforeColon": true, "afterColon": true, "on": "colon", "mode": "minimum" } }],
+      "no-plusplus": "off"
     },
     "globals": {
       "_dataModeler": false,
