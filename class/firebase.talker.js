@@ -1084,6 +1084,15 @@ class FirebaseTalker {
            */
           .then($parsed => new Promise((resolveValidators, rejectValidators) => {
 
+            /**
+             * Validators must run only
+             * if function is not in Getter mode
+             * to avoid error on data rebuilding
+             */
+            if (isGetter) {
+              return resolveValidators($parsed);
+            }
+
             let $error;
 
             /**
