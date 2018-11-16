@@ -61,10 +61,10 @@ class FirebaseTalker {
      */
     if (!/^([A-Z]|[a-z])+$/.test(find)) {
       throw new FireDataError({
-        $modelName: 'root',
-        functionName: '$path',
-        error: 'invalid-placeholder',
-        message: `Placeholder string must contain only Characters. Found ${find}`
+        $modelName    : 'root',
+        functionName  : '$path',
+        error         : 'invalid-placeholder',
+        message       : `Placeholder string must contain only Characters. Found ${find}`
       }).message;
     }
 
@@ -74,10 +74,10 @@ class FirebaseTalker {
      */
     if (find === 'id') {
       throw new FireDataError({
-        $modelName: 'root',
-        functionName: '$path',
-        error: 'invalid-placeholder',
-        message: 'System protected placeholder found : \'id\' placholder cannot be changed.'
+        $modelName    : 'root',
+        functionName  : '$path',
+        error         : 'invalid-placeholder',
+        message       : 'System protected placeholder found : \'id\' placholder cannot be changed.'
       }).message;
     }
 
@@ -197,9 +197,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$parse',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$parse',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -245,9 +245,9 @@ class FirebaseTalker {
             .then(resolveFather)
             .catch(original => rejectFather(new FireDataError({
               $modelName,
-              error: 'load-father-error',
-              functionName: '$parse',
-              message: `Error loading Father Model for ${$modelName}`,
+              error         : 'load-father-error',
+              functionName  : '$parse',
+              message       : `Error loading Father Model for ${$modelName}`,
               original
             })));
 
@@ -271,8 +271,8 @@ class FirebaseTalker {
                * Resolve Entire Parsing
                */
               return resolveParsing({
-                $parsed: self.$extract($modelName)($father),
-                $functionField: []
+                $parsed         : self.$extract($modelName)($father),
+                $functionField  : []
               });
 
             }
@@ -397,18 +397,18 @@ class FirebaseTalker {
                 if ($source === null && value.required) {
                   throw new FireDataError({
                     $modelName,
-                    error: `${path}-missing`,
-                    functionName: '$parse parseData',
-                    message: `Value for '${path}' is required but got undefined`
+                    error         : `${path}-missing`,
+                    functionName  : '$parse parseData',
+                    message       : `Value for '${path}' is required but got undefined`
                   });
                 }
 
                 if (!correctType && value.required) {
                   throw new FireDataError({
                     $modelName,
-                    error: `${path}-error`,
-                    functionName: '$parse parseData',
-                    message: `Value for '${path}' is required as '${value.variable}' but got '${typeof $source}'`
+                    error         : `${path}-error`,
+                    functionName  : '$parse parseData',
+                    message       : `Value for '${path}' is required as '${value.variable}' but got '${typeof $source}'`
                   });
                 }
 
@@ -441,10 +441,10 @@ class FirebaseTalker {
                  */
                 if (!$parsingModel) {
                   throw new FireDataError({
-                    $modelName: value.variable,
-                    error: 'dont-exists',
-                    functionName: '$parse subParse',
-                    message: `Required Model ${value.variable} from ${$modelName} doesn't Exists`
+                    $modelName    : value.variable,
+                    error         : 'dont-exists',
+                    functionName  : '$parse subParse',
+                    message       : `Required Model ${value.variable} from ${$modelName} doesn't Exists`
                   });
                 }
 
@@ -479,9 +479,9 @@ class FirebaseTalker {
                     if (!isString && value.required) {
                       throw new FireDataError({
                         $modelName,
-                        error: `${path}-invalid-exchange-field`,
-                        functionName: '$parse subParse',
-                        message: `Value for '${path}' require field '${$exchangeField}' to be a String but got ${typeof $source}`
+                        error         : `${path}-invalid-exchange-field`,
+                        functionName  : '$parse subParse',
+                        message       : `Value for '${path}' require field '${$exchangeField}' to be a String but got ${typeof $source}`
                       });
                     }
                   }
@@ -495,9 +495,9 @@ class FirebaseTalker {
                     if (!isValid && value.required) {
                       throw new FireDataError({
                         $modelName,
-                        error: `${path}-exchange-field-not-array`,
-                        functionName: '$parse subParse',
-                        message: `Value for '${path}' require field '${$exchangeField}' to be a valid Array Model but got ${$source}`
+                        error         : `${path}-exchange-field-not-array`,
+                        functionName  : '$parse subParse',
+                        message       : `Value for '${path}' require field '${$exchangeField}' to be a valid Array Model but got ${$source}`
                       });
                     }
   
@@ -550,10 +550,10 @@ class FirebaseTalker {
                               if ($parsedSource === null && value.required) {
                                 return rejectGetter(new FireDataError({
                                   $modelName,
-                                  error: 'invalid-model-data',
-                                  functionName: '$parse loadFirebaseData',
-                                  message: `Value for '${path}' require valid data for model '${value.variable}'`,
-                                  data: { received: $parsedSource }
+                                  error         : 'invalid-model-data',
+                                  functionName  : '$parse loadFirebaseData',
+                                  message       : `Value for '${path}' require valid data for model '${value.variable}'`,
+                                  data          : { received: $parsedSource }
                                 }));
                               }
   
@@ -590,9 +590,9 @@ class FirebaseTalker {
                             })
                             .catch(original => rejectGetter(new FireDataError({
                               $modelName,
-                              error: 'firebase-loading-error',
-                              functionName: '$parse loadFirebaseData',
-                              message: `An error occured while loading data for '${path}'`,
+                              error         : 'firebase-loading-error',
+                              functionName  : '$parse loadFirebaseData',
+                              message       : `An error occured while loading data for '${path}'`,
                               original
                             })));
                         })
@@ -628,9 +628,9 @@ class FirebaseTalker {
                   if ($source === null && value.required) {
                     throw new FireDataError({
                       $modelName,
-                      error: `${path}-missing`,
-                      functionName: '$parse parseData',
-                      message: `Value for '${path}' is required but got undefined`
+                      error         : `${path}-missing`,
+                      functionName  : '$parse parseData',
+                      message       : `Value for '${path}' is required but got undefined`
                     });
                   }
 
@@ -678,9 +678,9 @@ class FirebaseTalker {
                     if (!isGetter && !Array.isArray($source) && !oldData) {
                       throw new FireDataError({
                         $modelName,
-                        error: `${path}-error`,
-                        functionName: '$parse parseData',
-                        message: `Value for '${path}' is required as Array but got '${typeof $source}'`
+                        error         : `${path}-error`,
+                        functionName  : '$parse parseData',
+                        message       : `Value for '${path}' is required as Array but got '${typeof $source}'`
                       });
                     }
 
@@ -843,10 +843,10 @@ class FirebaseTalker {
               if (typeof $function !== 'function') {
                 return rejectFn(new FireDataError({
                   $modelName,
-                  error: 'invalid-function-name',
-                  functionName: '$parse compileFunctions',
-                  message: `Value for '${path}' require function '${value.variable}' but doens't exists`,
-                  data: { name: value._original }
+                  error         : 'invalid-function-name',
+                  functionName  : '$parse compileFunctions',
+                  message       : `Value for '${path}' require function '${value.variable}' but doens't exists`,
+                  data          : { name: value._original }
                 }));
               }
 
@@ -919,10 +919,10 @@ class FirebaseTalker {
                           if (isUndefined && value.required) {
                             return rejectFn(new FireDataError({
                               $modelName,
-                              error: 'invalid-function-result',
-                              functionName: '$parse compileFunctions',
-                              message: `Value for '${path}' is required but got undefined`,
-                              data: { name: value._original }
+                              error         : 'invalid-function-result',
+                              functionName  : '$parse compileFunctions',
+                              message       : `Value for '${path}' is required but got undefined`,
+                              data          : { name: value._original }
                             }));
                           }
 
@@ -945,9 +945,9 @@ class FirebaseTalker {
                         })
                         .catch(original => rejectFnPromise(new FireDataError({
                           $modelName,
-                          error: 'function-promise-rejected',
-                          functionName: '$parse compileFunction functionPromise',
-                          message: `An error occured while executing function for ${path}`,
+                          error         : 'function-promise-rejected',
+                          functionName  : '$parse compileFunction functionPromise',
+                          message       : `An error occured while executing function for ${path}`,
                           original
                         })));
 
@@ -1014,10 +1014,10 @@ class FirebaseTalker {
                 if (typeof $function !== 'function') {
                   return rejectFilters(new FireDataError({
                     $modelName,
-                    error: 'invalid-filter-name',
-                    functionName: '$parse compileFilter',
-                    message: `Value for '${path}' require filter '${filter}' but doens't exists`,
-                    data: { name: value._original }
+                    error         : 'invalid-filter-name',
+                    functionName  : '$parse compileFilter',
+                    message       : `Value for '${path}' require filter '${filter}' but doens't exists`,
+                    data          : { name: value._original }
                   }));
                 }
 
@@ -1055,10 +1055,10 @@ class FirebaseTalker {
                 if (isUndefined && value.required) {
                   return rejectFilters(new FireDataError({
                     $modelName,
-                    error: 'invalid-filter-result',
-                    functionName: '$parse compileFilters',
-                    message: `Value for '${path}' is required but got undefined`,
-                    data: { name: value._original }
+                    error         : 'invalid-filter-result',
+                    functionName  : '$parse compileFilters',
+                    message       : `Value for '${path}' is required but got undefined`,
+                    data          : { name: value._original }
                   }));
                 }
 
@@ -1106,9 +1106,9 @@ class FirebaseTalker {
             if ($error) {
               return rejectValidators(new FireDataError({
                 $modelName,
-                error: $error,
-                functionName: '$parse validateModel',
-                message: 'Custom field error'
+                error         : $error,
+                functionName  : '$parse validateModel',
+                message       : 'Custom field error'
               }));
             }
 
@@ -1149,10 +1149,12 @@ class FirebaseTalker {
           .then(resolve)
           .catch(original => reject(new FireDataError({
             $modelName,
-            error: 'parsing-error',
-            functionName: '$parse',
-            message: `An Error occured while Parsing ${$modelName}`,
-            data: { parsingData: $data, options: { omitNull, rawData, isGetter, oldData } },
+            error         : 'parsing-error',
+            functionName  : '$parse',
+            message       : `An Error occured while Parsing ${$modelName}`,
+            data          : {
+              parsingData  : $data,
+              options      : { omitNull, rawData, isGetter, oldData } },
             original
           })));
 
@@ -1182,9 +1184,9 @@ class FirebaseTalker {
     if (!$model._extractor) {
       return () => Promise.reject(new FireDataError({
         $extractorName,
-        error: 'invalid-extractor',
-        functionName: '$extract',
-        message: `Model '${$extractorName}' is not an Extractor and couldn't be used`
+        error         : 'invalid-extractor',
+        functionName  : '$extract',
+        message       : `Model '${$extractorName}' is not an Extractor and couldn't be used`
       }));
     }
 
@@ -1226,9 +1228,9 @@ class FirebaseTalker {
           if ($required) {
             throw new FireDataError({
               $extractorName,
-              error: `${path}-missing`,
-              functionName: '$extract extractData',
-              message: `Value for '${path}' is required but got undefined`
+              error         : `${path}-missing`,
+              functionName  : '$extract extractData',
+              message       : `Value for '${path}' is required but got undefined`
             });
           }
 
@@ -1283,9 +1285,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$get',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$get',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -1295,9 +1297,9 @@ class FirebaseTalker {
     if ($model._parser) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-getter',
-        functionName: '$get',
-        message: `Model '${$modelName}' is a Parser and cannot be used to get Data`
+        error         : 'invalid-getter',
+        functionName  : '$get',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to get Data`
       }));
     }
 
@@ -1329,9 +1331,9 @@ class FirebaseTalker {
           if ($hasID && typeof $id !== 'string') {
             throw new FireDataError({
               $modelName,
-              error: 'invalid-id',
-              functionName: '$get',
-              message: `Read path for Model '${$modelName}' requires an ID`
+              error         : 'invalid-id',
+              functionName  : '$get',
+              message       : `Read path for Model '${$modelName}' requires an ID`
             });
           }
 
@@ -1375,9 +1377,9 @@ class FirebaseTalker {
            */
           original => rejectData(new FireDataError({
             $modelName,
-            error: 'database-load-error',
-            functionName: '$get',
-            message: `An error occured while downloading data from Database for '${$modelName}'`,
+            error         : 'database-load-error',
+            functionName  : '$get',
+            message       : `An error occured while downloading data from Database for '${$modelName}'`,
             original
           })));
 
@@ -1427,9 +1429,9 @@ class FirebaseTalker {
                 .then(() => resolve($data))
                 .catch(original => reject(new FireDataError({
                   $modelName,
-                  error: 'get-hook-function-error',
-                  functionName: '$get onGetFunctions',
-                  message: `An error occured while executing Hooks functions for $get Method for '${$modelName}'`,
+                  error         : 'get-hook-function-error',
+                  functionName  : '$get onGetFunctions',
+                  message       : `An error occured while executing Hooks functions for $get Method for '${$modelName}'`,
                   original
                 })));
             }
@@ -1442,9 +1444,9 @@ class FirebaseTalker {
           })
           .catch(original => reject(new FireDataError({
             $modelName,
-            error: 'get-data-error',
-            functionName: '$get',
-            message: `An error occured while getting data for '${$modelName}'`,
+            error         : 'get-data-error',
+            functionName  : '$get',
+            message       : `An error occured while getting data for '${$modelName}'`,
             original
           })));
 
@@ -1470,9 +1472,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$add',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$add',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -1483,18 +1485,18 @@ class FirebaseTalker {
     if ($model._extractor) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$add',
-        message: `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to add data`
+        error         : 'invalid-model',
+        functionName  : '$add',
+        message       : `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to add data`
       }));
     }
 
     if ($model._parser) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$add',
-        message: `Model '${$modelName}' is a Parser and cannot be used to add new Data`
+        error         : 'invalid-model',
+        functionName  : '$add',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to add new Data`
       }));
     }
 
@@ -1505,9 +1507,9 @@ class FirebaseTalker {
     if (!$model.paths.hasID) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-function',
-        functionName: '$add',
-        message: `Model '${$modelName}' is a non-ID based model. Use $set function to set data on Database instead of the $add function`
+        error         : 'invalid-function',
+        functionName  : '$add',
+        message       : `Model '${$modelName}' is a non-ID based model. Use $set function to set data on Database instead of the $add function`
       }));
     }
 
@@ -1519,9 +1521,9 @@ class FirebaseTalker {
     if (CONST.ID_REGEX.test($model.paths.read)) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-path',
-        functionName: '$add',
-        message: `Model ${$modelName} is a ID-Based but it's read/write path is a child of the ID and cannot be used to $add data.`
+        error         : 'invalid-path',
+        functionName  : '$add',
+        message       : `Model ${$modelName} is a ID-Based but it's read/write path is a child of the ID and cannot be used to $add data.`
       }));
     }
 
@@ -1649,11 +1651,11 @@ class FirebaseTalker {
 
           .catch(original => reject(new FireDataError({
             $modelName,
-            error: 'database-add-error',
-            functionName: '$add',
-            message: `An error occurred while adding data to Database for '${$modelName}'`,
-            original,
-            data: $data
+            error         : 'database-add-error',
+            functionName  : '$add',
+            message       : `An error occurred while adding data to Database for '${$modelName}'`,
+            data          : $data,
+            original
           })));
 
       });
@@ -1677,9 +1679,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$set',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$set',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -1690,18 +1692,18 @@ class FirebaseTalker {
     if ($model._extractor) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$set',
-        message: `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to set data`
+        error         : 'invalid-model',
+        functionName  : '$set',
+        message       : `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to set data`
       }));
     }
 
     if ($model._parser) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$set',
-        message: `Model '${$modelName}' is a Parser and cannot be used to set Data`
+        error         : 'invalid-model',
+        functionName  : '$set',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to set Data`
       }));
     }
 
@@ -1712,9 +1714,9 @@ class FirebaseTalker {
     if ($model.paths.hasID) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-function',
-        functionName: '$set',
-        message: `Model '${$modelName}' is a ID based model. Use $add function to push data on Database instead of the $set function`
+        error         : 'invalid-function',
+        functionName  : '$set',
+        message       : `Model '${$modelName}' is a ID based model. Use $add function to push data on Database instead of the $set function`
       }));
     }
 
@@ -1825,11 +1827,11 @@ class FirebaseTalker {
 
           .catch(original => reject(new FireDataError({
             $modelName,
-            error: 'set-data-error',
-            functionName: '$set',
-            message: `An error occured while setting data to Database for ${$modelName}`,
-            original,
-            data: $data
+            error         : 'set-data-error',
+            functionName  : '$set',
+            message       : `An error occured while setting data to Database for ${$modelName}`,
+            data          : $data,
+            original
           })));
 
       });
@@ -1853,9 +1855,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$update',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$update',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -1866,18 +1868,18 @@ class FirebaseTalker {
     if ($model._extractor) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$update',
-        message: `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to update data`
+        error         : 'invalid-model',
+        functionName  : '$update',
+        message       : `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to update data`
       }));
     }
 
     if ($model._parser) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$update',
-        message: `Model '${$modelName}' is a Parser and cannot be used to update Data`
+        error         : 'invalid-model',
+        functionName  : '$update',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to update Data`
       }));
     }
 
@@ -1914,9 +1916,9 @@ class FirebaseTalker {
         if ($hasID && typeof $id !== 'string') {
           throw new FireDataError({
             $modelName,
-            error: 'invalid-id',
-            functionName: '$update',
-            message: `Write path for Model '${$modelName}' requires an ID`
+            error         : 'invalid-id',
+            functionName  : '$update',
+            message       : `Write path for Model '${$modelName}' requires an ID`
           });
         }
 
@@ -1964,9 +1966,9 @@ class FirebaseTalker {
             if (!$oldLoadedData && $oldDataSource.$isEmpty()) {
               return reject(new FireDataError({
                 $modelName,
-                error: 'data-not-found',
-                functionName: '$update',
-                message: `Data to update model '${$modelName}' was not found on Database`
+                error         : 'data-not-found',
+                functionName  : '$update',
+                message       : `Data to update model '${$modelName}' was not found on Database`
               }));
             }
 
@@ -2112,11 +2114,11 @@ class FirebaseTalker {
                             
                             original => rejectQuery(new FireDataError({
                               $modelName,
-                              error: 'database-query-error',
-                              functionName: '$parse evalQuery',
-                              message: `Error on loading data for path '${$path.ref}' ordered by '${$path.queryOn}'`,
                               original,
-                              data: { path: $path }
+                              error         : 'database-query-error',
+                              functionName  : '$parse evalQuery',
+                              message       : `Error on loading data for path '${$path.ref}' ordered by '${$path.queryOn}'`,
+                              data          : { path: $path }
                             })));
                         })
                       );
@@ -2185,11 +2187,11 @@ class FirebaseTalker {
 
               .catch(original => reject(new FireDataError({
                 $modelName,
-                error: 'update-data-error',
-                functionName: '$update',
-                message: `An error occured while updating data for ${$modelName}`,
-                data: { updater: $updater.$keyMap() },
-                original
+                original,
+                error         : 'update-data-error',
+                functionName  : '$update',
+                message       : `An error occured while updating data for ${$modelName}`,
+                data          : { updater: $updater.$keyMap() }
               })));
 
           });
@@ -2214,9 +2216,9 @@ class FirebaseTalker {
     if (!$model) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$delete',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$delete',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -2227,18 +2229,18 @@ class FirebaseTalker {
     if ($model._extractor) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$delete',
-        message: `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to delete data`
+        error         : 'invalid-model',
+        functionName  : '$delete',
+        message       : `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to delete data`
       }));
     }
 
     if ($model._parser) {
       return () => Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$delete',
-        message: `Model '${$modelName}' is a Parser and cannot be used to delete Data`
+        error         : 'invalid-model',
+        functionName  : '$delete',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to delete Data`
       }));
     }
 
@@ -2276,9 +2278,9 @@ class FirebaseTalker {
         if ($hasID && !Array.isArray($id)) {
           throw new FireDataError({
             $modelName,
-            error: 'invalid-id',
-            functionName: '$delete',
-            message: `Write path for Model '${$modelName}' requires one or more IDs`
+            error         : 'invalid-id',
+            functionName  : '$delete',
+            message       : `Write path for Model '${$modelName}' requires one or more IDs`
           });
         }
 
@@ -2391,11 +2393,11 @@ class FirebaseTalker {
   
                     original => rejectQuery(new FireDataError({
                       $modelName,
-                      error: 'database-query-error',
-                      functionName: '$parse evalQuery',
-                      message: `Error on loading data for path '${$path._original}' ordered by '${$path.queryOn}' for ID: ${$singleID}`,
                       original,
-                      data: { path: $path }
+                      error         : 'database-query-error',
+                      functionName  : '$parse evalQuery',
+                      message       : `Error on loading data for path '${$path._original}' ordered by '${$path.queryOn}' for ID: ${$singleID}`,
+                      data          : { path: $path }
                     })));
                   })
                 );
@@ -2459,11 +2461,11 @@ class FirebaseTalker {
 
           .catch(original => reject(new FireDataError({
             $modelName,
-            error: 'delete-data-error',
-            functionName: '$delete',
-            message: `An error occured while deleting data for ${$modelName}`,
-            data: { $id },
-            original
+            original,
+            error         : 'delete-data-error',
+            functionName  : '$delete',
+            message       : `An error occured while deleting data for ${$modelName}`,
+            data          : { $id }
           })));
 
       });
@@ -2488,9 +2490,9 @@ class FirebaseTalker {
     if (!$model) {
       return Promise.reject(new FireDataError({
         $modelName,
-        error: 'dont-exists',
-        functionName: '$drop',
-        message: `Model '${$modelName}' doesn't exists`
+        error         : 'dont-exists',
+        functionName  : '$drop',
+        message       : `Model '${$modelName}' doesn't exists`
       }));
     }
 
@@ -2501,18 +2503,18 @@ class FirebaseTalker {
     if ($model._extractor) {
       return Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$drop',
-        message: `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to drop data`
+        error         : 'invalid-model',
+        functionName  : '$drop',
+        message       : `Model '${$modelName}' is an Extractor and couldn't be used. Use '${$model._extractor}' to drop data`
       }));
     }
 
     if ($model._parser) {
       return Promise.reject(new FireDataError({
         $modelName,
-        error: 'invalid-model',
-        functionName: '$drop',
-        message: `Model '${$modelName}' is a Parser and cannot be used to drop Data`
+        error         : 'invalid-model',
+        functionName  : '$drop',
+        message       : `Model '${$modelName}' is a Parser and cannot be used to drop Data`
       }));
     }
 
@@ -2544,10 +2546,10 @@ class FirebaseTalker {
         .then(resolve)
         .catch(original => reject(new FireDataError({
           $modelName,
-          error: 'drop-data-error',
-          functionName: '$drop',
-          message: 'An error occured while dropping Database node',
-          original
+          original,
+          error         : 'drop-data-error',
+          functionName  : '$drop',
+          message       : 'An error occured while dropping Database node'
         })));
 
     });
@@ -2662,10 +2664,10 @@ function parseFirebaseReference($this, $path, { $hasID = false, $id } = {}) {
    */
   if ($undefinedPlaceholders && $undefinedPlaceholders.length) {
     throw new FireDataError({
-      $modelName: 'root',
-      functionName: '$parseReferences',
-      error: 'undefined-placeholder',
-      message: `Undefined path placeholders '${$undefinedPlaceholders.join('\' - \'')}' for path '${$path}'`
+      $modelName    : 'root',
+      functionName  : '$parseReferences',
+      error         : 'undefined-placeholder',
+      message       : `Undefined path placeholders '${$undefinedPlaceholders.join('\' - \'')}' for path '${$path}'`
     });
   }
 

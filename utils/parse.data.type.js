@@ -75,20 +75,20 @@ function parseDataType($data) {
   }
 
   const $dataType = {
-    _original: $data,
-    variable: variableName,
-    autoCast: !!autoCast,
-    isPrimitive: !!/^(string|number|boolean)$/i.test(variable) && !isFunction,
-    isArray: !!/^array$/i.test(variable) && !isFunction,
-    isObject: !!/^object$/i.test(variable) && !isFunction,
     isModel,
     isModelArray,
     isFunction,
-    required: required === '!',
-    reference: bind === '>' && (isFunction || isModel),
-    bind: bind === '=' && (isFunction || isModel),
     params,
-    filters: filter.slice()
+    _original    : $data,
+    variable     : variableName,
+    autoCast     : !!autoCast,
+    isPrimitive  : !!/^(string|number|boolean)$/i.test(variable) && !isFunction,
+    isArray      : !!/^array$/i.test(variable) && !isFunction,
+    isObject     : !!/^object$/i.test(variable) && !isFunction,
+    required     : required === '!',
+    reference    : bind === '>' && (isFunction || isModel),
+    bind         : bind === '=' && (isFunction || isModel),
+    filters      : filter.slice()
   };
 
   /**

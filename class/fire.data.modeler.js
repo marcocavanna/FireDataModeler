@@ -464,14 +464,14 @@ function buildModel({ $name, $constructor, $isExtractor = false, $isParser = fal
    * Save the Constructor
    */
   const $newModel = {
-    _extractor: $isExtractor ? model : false,
-    _parser: !!$isParser,
-    _keys: $keysMapping,
-    model: $isExtractor ? extract : model,
-    validators: Array.isArray(validators) ? validators.slice() : [],
     paths,
-    formatters: Array.isArray(formatters) ? formatters.slice() : [],
-    hooks: {}
+    _extractor  : $isExtractor ? model                            : false,
+    _parser     : !!$isParser,
+    _keys       : $keysMapping,
+    model       : $isExtractor ? extract                          : model,
+    validators  : Array.isArray(validators) ? validators.slice()  : [],
+    formatters  : Array.isArray(formatters) ? formatters.slice()  : [],
+    hooks       : {}
   };
 
   /**
