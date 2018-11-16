@@ -2178,7 +2178,10 @@ class FirebaseTalker {
                */
               .then(() => $firebase.ref().update($updater.$keyMap()))
 
-              .then(resolve)
+              /**
+               * Resolve returning the updated Key
+               */
+              .then(() => resolve($updater.$build()))
 
               .catch(original => reject(new FireDataError({
                 $modelName,
