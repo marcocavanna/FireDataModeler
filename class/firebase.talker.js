@@ -1925,15 +1925,11 @@ class FirebaseTalker {
          */
         const $paths = clonePathsArray($model.paths.writes)
           .map(($path) => {
-            $path.ref = parseFirebaseReference(self, $path.ref);
-
             /**
-             * Append ID if ref is ID Based
+             * Update path reference to set the ID
+             * only if is not queried
              */
-            if ($hasID && !$path.queryOn) {
-              $path._original = $path.ref;
-              $path.ref = `${$path.ref}/${$id}`;
-            }
+            $path.ref = parseFirebaseReference(self, $path.ref, { $hasID: !$path.queryOn, $id });
 
             return $path;
           });
