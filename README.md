@@ -431,11 +431,13 @@ Each key of the Model object must be a correct [FireData Type Definition](#fired
 Paths key is required to let the talker know where add/set/update/delete the data. Path string can contain _placeholder_, like `data/$team/contact`. All the placeholder must be defined using the [`Talker.$path`](#pathplaceholder) function.
 
 It could contain the following properties.
+
 | Key      | Type       | Required | Default | Description                                          |
 | -------- | ---------- | -------- | ------- | ---------------------------------------------------- |
 | `hasID`  | `Boolean`  | `false`  | `true`  | Tell the Talker that data for this model is ID-based |
 | `read`   | `String`   | `true`   |         | The main Read/Write path for the Model               |
 | `writes` | `Object[]` | `false`  |         | All the path where write data                        |
+
 ##### `read` {String} <!-- omit in toc -->
 The main Model path. It is the path where the model will add data or where it will read and parse data while getting it. It will be auto-added to writes path array
 ##### `hasID` {Boolean=true} <!-- omit in toc -->
@@ -471,10 +473,12 @@ By default, reference path in ID-based structure, the reference ID will be appen
 
 #### `validators` {Object[]}
 Validators key is an Array of object that must contain the following properties
+
 | Key       | Type       | Required | Description                                          |
 | --------- | ---------- | -------- | ---------------------------------------------------- |
 | `checker` | `Function` | `true`   | Function to Execute, receive parsed data as argument |
 | `error`   | `String`   | `true`   | Error to throw back                                  |
+
 ##### `checker` {Function} <!-- omit in toc -->
 The function to execute to validate data. If function will return `false`, the process stops and the `error` will be thrown through promise rejection. The function will receive parsed data as argument
 ##### `error` {String} <!-- omit in toc -->
@@ -565,12 +569,14 @@ Modeler
   })
 ```
 The extractor _constructor_ could have the following properties
+
 | Key          | Type         | Required | Default | Description                                            |
 | ------------ | ------------ | -------- | ------- | ------------------------------------------------------ |
 | `model`      | `String`     | `true`   |         | Model Rapresentation                                   |
 | `extract`    | `Object`     | `true`   |         | Key to Extract from father model                       |
 | `validators` | `Object[]`   | `false`  | `[]`    | Array of Validator functions to execute during parsing |
 | `formatters` | `Function[]` | `false`  | `[]`    | Array of Function to format the Data                   |
+
 #### `model` {String}
 The name of the model to use and extract data
 #### `extract` {Object}
