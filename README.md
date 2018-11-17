@@ -528,8 +528,10 @@ Example
 Formatters function __mustn't__ be `async function` as they are evaluated in sync mode!
 
 #### `onAdd | onSet | onGet | onUpdate | onDelete` {Function[]}
-Array of hook function to execute on `Model` event. Each function will receive as parameters the `$id` (if exists, else `undefined`) and the parsed data. This function won't change data sendend to Firebase.
+Array of hook function to execute on `Model` event. Each function will receive as parameters the the parsed data (`null` on [\$delete](#deletemodelname)) and `$id` (if exists, else `undefined`). This function won't change data sendend to Firebase.
 Each function are executed at the same time but they could be `Promise` function. Talker operation will be wait untill all function will be executed before update data on Firebase.
+
+The `this` of the Hook function referr to the `Talker` instance.
 
 ### $extractor(_name_, _constructor_)
 An extractor is a simple model that will extract data from a father model to write only certain data to Databse instead of all field.

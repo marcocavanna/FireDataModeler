@@ -1419,7 +1419,7 @@ class FirebaseTalker {
                  * Build an async function to wait result
                  */
                 const $exec = async function waitResult() {
-                  const $result = await $function($data, $id);
+                  const $result = await $function.apply(self, [$data, $id]);
                   return $result;
                 };
 
@@ -1635,7 +1635,7 @@ class FirebaseTalker {
                * Build an async function to wait result
                */
               const $exec = async function waitResult() {
-                const $result = await $function($parsedData, $id);
+                const $result = await $function.apply(self, [$parsedData, $id]);
                 return $result;
               };
 
@@ -1811,7 +1811,7 @@ class FirebaseTalker {
                * Build an async function to wait result
                */
               const $exec = async function waitResult() {
-                const $result = await $function($parsedData);
+                const $result = await $function.apply(self, [$parsedData]);
                 return $result;
               };
 
@@ -2164,7 +2164,7 @@ class FirebaseTalker {
                    * Build an async function to wait result
                    */
                   const $exec = async function waitResult() {
-                    const $result = await $function($parsedData, $id);
+                    const $result = await $function.apply(self, [$parsedData, $id]);
                     return $result;
                   };
 
@@ -2443,7 +2443,7 @@ class FirebaseTalker {
                * Build an async function to wait result
                */
               const $exec = async function waitResult() {
-                const $result = await $function(null, $id);
+                const $result = await $function.apply(self, [null, $id]);
                 return $result;
               };
 
