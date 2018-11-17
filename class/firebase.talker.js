@@ -2284,7 +2284,7 @@ class FirebaseTalker {
         /**
          * Check ID exists
          */
-        if ($hasID && !Array.isArray($id)) {
+        if ($hasID && !Array.isArray($ids)) {
           throw new FireDataError({
             $modelName,
             error         : 'invalid-id',
