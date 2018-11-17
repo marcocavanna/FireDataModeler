@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.4` - 2018-11-17
+### `Added`
+- ['<4e1899f>'](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) Added 4 new Hook function `afterAdd`, `afterUpdate`, `afterSet`, `afterDelete` that are executed in the same way of the `on` Hook functon, but after data changed on Database. They could be Async function and the main `Talker` function will wait for the resolution of Hooks before resolve itself.
+
+### `Changed`
+- ['<4e1899f>'](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) The `onDelete` Hook function now receive as first argument a copy of the raw data on the Database for the deleting element.
+- ['<1ba121c>'](https://github.com/marcocavanna/FireDataModeler/commit/1ba121c8b000e84470ba8424ec339edbba5ad507) The `onUpdate` Hook function now receive as second argument the old data
+  ```js
+  {
+    ...
+    onDelete: [
+      function (newData, oldData, $id) {
+        /**
+         * newData is the new parsed object
+         * oldData is the old parsed object
+         */
+      }
+    ]
+  }
+  ```
+
 ## `1.2.3` - 2018-11-17
 ### `Changed`
 - ['<ca90232>'](https://github.com/marcocavanna/FireDataModeler/commit/ca9023283602889ab9f396710a030c4782c2a6de) The `this` keyword in Hook Functions (onAdd, onGet, onSet, onUpdate, onDelete) now referr to the current instance of `Talker`
