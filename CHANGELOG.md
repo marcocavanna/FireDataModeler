@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.3` - 2018-11-17
+### `Changed`
+- ['<ca90232>'](https://github.com/marcocavanna/FireDataModeler/commit/ca9023283602889ab9f396710a030c4782c2a6de) The `this` keyword in Hook Functions (onAdd, onGet, onSet, onUpdate, onDelete) now referr to the current instance of `Talker`
+
+### `Fixed`
+- ['<eadd1b3>'](https://github.com/marcocavanna/FireDataModeler/commit/eadd1b322de015031015ecb7ca058f28810bdb71) `$delete` function now will convert correctly a String type $id in an Array to delete multiple data
+
 ## `1.2.2` - 2018-11-16
 ### `Added`
 - [`<95f4816>`](https://github.com/marcocavanna/FireDataModeler/commit/95f481687da564b66428499b07187a30ac77ea8e) Writed and added the ReadMe file
