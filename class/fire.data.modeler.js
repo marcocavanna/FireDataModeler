@@ -42,11 +42,16 @@ class FireDataModeler {
    * @param {String} $constructor.validators[].error Error to throw
    * @param {Function} $constructor.validators[].checker Function to Execute to Validate Model
    * 
-   * @param {Function[]} [$constructor.onAdd] A series of function to execute on Add Process
-   * @param {Function[]} [$constructor.onSet] A series of function to execute on Set Process
-   * @param {Function[]} [$constructor.onGet] A series of function to execute on Get Process
-   * @param {Function[]} [$constructor.onUpdate] A series of function to execute on Update Process
-   * @param {Function[]} [$constructor.onDelete] A series of function to execute on Delete Process
+   * @param {Function[]} [$constructor.onAdd] A series of function to execute before Add Process
+   * @param {Function[]} [$constructor.onSet] A series of function to execute before Set Process
+   * @param {Function[]} [$constructor.onGet] A series of function to execute before Get Process
+   * @param {Function[]} [$constructor.onUpdate] A series of function to execute before Update Process
+   * @param {Function[]} [$constructor.onDelete] A series of function to execute before Delete Process
+   * 
+   * @param {Function[]} [$constructor.afterAdd] A series of function to execute before Add Process
+   * @param {Function[]} [$constructor.afterSet] A series of function to execute before Set Process
+   * @param {Function[]} [$constructor.afterUpdate] A series of function to execute before Update Process
+   * @param {Function[]} [$constructor.afterDelete] A series of function to execute before Delete Process
    * 
    * @param {Object} [$constructor.paths] Firebase Path Builder
    * @param {Boolean} [$constructor.paths.hasID=true] If the Model is an Array of Object into Firebase
@@ -477,7 +482,7 @@ function buildModel({ $name, $constructor, $isExtractor = false, $isParser = fal
   /**
    * Add Hook Functions
    */
-  ['onAdd', 'onSet', 'onGet', 'onUpdate', 'onDelete'].forEach(($field) => {
+  ['onAdd', 'onSet', 'onGet', 'onUpdate', 'onDelete', 'afterAdd', 'afterSet', 'afterUpdate', 'afterDelete'].forEach(($field) => {
     $newModel.hooks[$field] = getHookFunction($field);
   });
 

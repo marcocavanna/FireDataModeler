@@ -1319,7 +1319,7 @@ class FirebaseTalker {
     const $father = $model._extractor && loadModel(this, $model._extractor);
 
     return function getDataFromFirebase($id, { omitNull = true, rawData = false, newData } = {}) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveGetterFunction, rejectGetterFunction) => {
         /**
          * Get Data from Database
          */
@@ -1400,43 +1400,21 @@ class FirebaseTalker {
              * In this case must search and execute functions
              */
             if (!rawData && !newData) {
-              /**
-               * Build a promises to execute all function
-               * also in async mode
-               */
-              const $promises = [];
-
-              /**
-               * Loop each functions
-               */
-              ($father ? $father.hooks.onGet : $model.hooks.onGet).forEach(($function) => {
+              return executeHookFunctions({
+                $model   : $father || $model,
+                hook     : 'onGet',
+                params   : [$data, $id],
+                context  : self
+              })
                 /**
-                 * If is not a Function skip
+                 * Resolve Data
                  */
-                if (typeof $function !== 'function') return;
+                .then(() => resolveGetterFunction($data))
 
                 /**
-                 * Build an async function to wait result
+                 * Catch error
                  */
-                const $exec = async function waitResult() {
-                  const $result = await $function.apply(self, [$data, $id]);
-                  return $result;
-                };
-
-                /**
-                 * Push the execution into promises
-                 */
-                $promises.push($exec());
-
-              });
-
-              /**
-               * Wait the resolution of all
-               * promises, and the resolve $data
-               */
-              return Promise.all($promises)
-                .then(() => resolve($data))
-                .catch(original => reject(new FireDataError({
+                .catch(original => rejectGetterFunction(new FireDataError({
                   $modelName,
                   error         : 'get-hook-function-error',
                   functionName  : '$get onGetFunctions',
@@ -1448,10 +1426,10 @@ class FirebaseTalker {
             /**
              * Else, simply resolve the data
              */
-            return resolve($data);
+            return resolveGetterFunction($data);
 
           })
-          .catch(original => reject(new FireDataError({
+          .catch(original => rejectGetterFunction(new FireDataError({
             $modelName,
             error         : 'get-data-error',
             functionName  : '$get',
@@ -1544,7 +1522,7 @@ class FirebaseTalker {
       /**
        * Parse data to Add
        */
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveAdderFunction, rejectAdderFunction) => {
         /**
          * Parsed data will be pushed in the main
          * path first, to retreive an ID
@@ -1620,45 +1598,37 @@ class FirebaseTalker {
              * Before sending the Updater must
              * execute hook functions if exists
              */
-            const $promises = [];
-
-            /**
-             * Loop for each hook function
-             */
-            $model.hooks.onAdd.forEach(($function) => {
-              /**
-               * If is not a Function skip
-               */
-              if (typeof $function !== 'function') return;
-
-              /**
-               * Build an async function to wait result
-               */
-              const $exec = async function waitResult() {
-                const $result = await $function.apply(self, [$parsedData, $id]);
-                return $result;
-              };
-
-              /**
-               * Push the execution into promises
-               */
-              $promises.push($exec());
-
+            return executeHookFunctions({
+              $model,
+              hook     : 'onAdd',
+              params   : [$parsedData, $id],
+              context  : self
             });
-
-            /**
-             * Wait the resolution of all
-             * promises and then add data
-             */
-            return Promise.all($promises);
 
           })
 
           .then(() => $firebase.ref().update($updater))
 
-          .then(() => resolve($id))
+          /**
+           * Before resolve the $add function must check if there are
+           * some hook function to execute after adding
+           */
+          .then(() => executeHookFunctions({
+            $model,
+            hook     : 'afterAdd',
+            params   : [$updater[Object.keys($updater)[0]], $id],
+            context  : self
+          }))
 
-          .catch(original => reject(new FireDataError({
+          /**
+           * Resolve add Function
+           */
+          .then(() => resolveAdderFunction($id))
+
+          /**
+           * Catch function error
+           */
+          .catch(original => rejectAdderFunction(new FireDataError({
             $modelName,
             error         : 'database-add-error',
             functionName  : '$add',
@@ -1740,7 +1710,7 @@ class FirebaseTalker {
       /**
        * Parse data to Set
        */
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveSetterFunction, rejectSetterFunction) => {
         self.$parse($modelName)($data)
           .then(($parsedData) => {
 
@@ -1796,45 +1766,31 @@ class FirebaseTalker {
              * Before sending the Updater must
              * execute hook functions if exists
              */
-            const $promises = [];
-
-            /**
-             * Loop for each hook function
-             */
-            $model.hooks.onSet.forEach(($function) => {
-              /**
-               * If is not a Function skip
-               */
-              if (typeof $function !== 'function') return;
-
-              /**
-               * Build an async function to wait result
-               */
-              const $exec = async function waitResult() {
-                const $result = await $function.apply(self, [$parsedData]);
-                return $result;
-              };
-
-              /**
-               * Push the execution into promises
-               */
-              $promises.push($exec());
-
+            return executeHookFunctions({
+              $model,
+              hook     : 'onSet',
+              params   : [$parsedData],
+              context  : self
             });
-
-            /**
-             * Wait the resolution of all
-             * promises and then add data
-             */
-            return Promise.all($promises);
 
           })
 
           .then(() => $firebase.ref().update($updater))
 
-          .then(resolve)
+          /**
+           * Before resolve the $set function
+           * must look and execute hook function
+           */
+          .then(() => executeHookFunctions({
+            $model,
+            hook     : 'afterSet',
+            params   : [$updater[Object.keys($updater)[0]]],
+            context  : self
+          }))
 
-          .catch(original => reject(new FireDataError({
+          .then(() => resolveSetterFunction(null))
+
+          .catch(original => rejectSetterFunction(new FireDataError({
             $modelName,
             error         : 'set-data-error',
             functionName  : '$set',
@@ -1901,7 +1857,7 @@ class FirebaseTalker {
        * Return a Promise wrapping
        * the Updater Flow
        */
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveUpdaterFunction, rejectUpdaterFunction) => {
 
         /**
          * Check ID Fields
@@ -1973,7 +1929,7 @@ class FirebaseTalker {
              * old data exists
              */
             if (!$oldLoadedData && $oldDataSource.$isEmpty()) {
-              return reject(new FireDataError({
+              return rejectUpdaterFunction(new FireDataError({
                 $modelName,
                 error         : 'data-not-found',
                 functionName  : '$update',
@@ -2148,43 +2104,11 @@ class FirebaseTalker {
                * Before sending the Updater must
                * execute hook functions if exists
                */
-              .then(() => new Promise((resolveHook, rejectHook) => {
-                const $oldDataBuilded = $oldDataSource.$build();
-                const $promises = [];
-
-                /**
-                 * Loop for each hook function
-                 */
-                $model.hooks.onUpdate.forEach(($function) => {
-                  /**
-                   * If is not a Function skip
-                   */
-                  if (typeof $function !== 'function') return;
-
-                  /**
-                   * Build an async function to wait result
-                   */
-                  const $exec = async function waitResult() {
-                    const $result = await $function.apply(
-                      self, [$parsedData, $oldDataBuilded, $id]
-                    );
-                    return $result;
-                  };
-
-                  /**
-                   * Push the execution into promises
-                   */
-                  $promises.push($exec());
-
-                });
-
-                /**
-                 * Wait the resolution of all
-                 * promises and then add data
-                 */
-                return Promise.all($promises)
-                  .then(resolveHook)
-                  .catch(rejectHook);
+              .then(() => executeHookFunctions({
+                $model,
+                hook     : 'onUpdate',
+                params   : [$parsedData, $oldDataSource.$build(), $id],
+                context  : self
               }))
 
               /**
@@ -2193,11 +2117,21 @@ class FirebaseTalker {
               .then(() => $firebase.ref().update($updater.$keyMap()))
 
               /**
+               * Execute hook function for afterUpdate
+               */
+              .then(() => executeHookFunctions({
+                $model,
+                hook     : ['afterUpdate'],
+                params   : [$parsedData, $oldDataSource.$build(), $id],
+                context  : self
+              }))
+
+              /**
                * Resolve returning the updated Key
                */
-              .then(() => resolve($updater.$build()))
+              .then(() => resolveUpdaterFunction($updater.$build()))
 
-              .catch(original => reject(new FireDataError({
+              .catch(original => rejectUpdaterFunction(new FireDataError({
                 $modelName,
                 original,
                 error         : 'update-data-error',
@@ -2260,7 +2194,7 @@ class FirebaseTalker {
      * Return the DeleteFunction
      */
     return function deleteFirebaseData($id) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveDeleterFunction, rejectDeleterFunction) => {
         /**
          * Check ID Fields
          */
@@ -2310,6 +2244,12 @@ class FirebaseTalker {
         const $updater = {};
 
         /**
+         * Init a variable
+         * to save raw deleting data
+         */
+        let $deletingData = {};
+
+        /**
          * Get Firebase instance
          */
         const $firebase = _firebaseAdmin.get(self);
@@ -2318,9 +2258,44 @@ class FirebaseTalker {
          * Build an updating Promises
          * to resolve the queried data
          */
-        const $updatePromises = [];
+        const $updatePromises = [
+          /**
+           * The first promise to resolve is
+           * to get raw deleting data to pass to hook functions
+           */
+          new Promise((resolveGetRawData, rejectGetRawData) => {
+            /**
+             * Get Read Path
+             */
+            const $path = parseFirebaseReference(
+              self, $model.paths.read,
+              { $hasID, $id }
+            );
+            $firebase.ref($path).once('value', ($snap) => {
+              /**
+               * Save old data
+               */
+              $deletingData = $snap.exists() ? $snap.exportVal() : {};
+              return resolveGetRawData();
+
+            }, e => rejectGetRawData(new FireDataError({
+              $modelName,
+              error         : 'raw-data-error',
+              functionName  : '$delete getRawData',
+              message       : `Error retreiving old raw data for Model '${$modelName}'`,
+              original      : e
+            })));
+          })
+        ];
+
+        /**
+         * Save updated Path
+         */
         const $updatedPath = [];
 
+        /**
+         * Loop path to update data
+         */
         $paths.forEach(($path) => {
           /**
            * Update Path, only if isn't updated yet
@@ -2427,51 +2402,39 @@ class FirebaseTalker {
         Promise.all($updatePromises)
 
           /**
-           * Before sending the Updater must
-           * execute hook functions if exists
+           * Execute hook function for delete method
            */
-          .then(() => new Promise((resolveHook, rejectHook) => {
-            const $promises = [];
-
-            /**
-             * Loop for each hook function
-             */
-            $model.hooks.onDelete.forEach(($function) => {
-              /**
-               * If is not a Function skip
-               */
-              if (typeof $function !== 'function') return;
-
-              /**
-               * Build an async function to wait result
-               */
-              const $exec = async function waitResult() {
-                const $result = await $function.apply(self, [null, $id]);
-                return $result;
-              };
-
-              /**
-               * Push the execution into promises
-               */
-              $promises.push($exec());
-
-            });
-
-            /**
-             * Wait the resolution of all
-             * promises and then add data
-             */
-            return Promise.all($promises)
-              .then(resolveHook)
-              .catch(rejectHook);
-
+          .then(() => executeHookFunctions({
+            $model,
+            hook     : 'onDelete',
+            params   : [$deletingData, $id],
+            context  : self
           }))
 
+          /**
+           * Send the Updater
+           */
           .then(() => $firebase.ref().update($updater))
 
-          .then(resolve)
+          /**
+           * Before resolve $delete must execute hook function
+           */
+          .then(() => executeHookFunctions({
+            $model,
+            hook     : 'afterDelete',
+            params   : [$deletingData, $id],
+            context  : self
+          }))
 
-          .catch(original => reject(new FireDataError({
+          /**
+           * Resolve the $delete function
+           */
+          .then(() => resolveDeleterFunction())
+
+          /**
+           * Catch error
+           */
+          .catch(original => rejectDeleterFunction(new FireDataError({
             $modelName,
             original,
             error         : 'delete-data-error',
@@ -2530,7 +2493,7 @@ class FirebaseTalker {
       }));
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolveDropFunction, rejectDropFunction) => {
 
       const $updater = new FireDataObject();
 
@@ -2549,14 +2512,14 @@ class FirebaseTalker {
        * If updater is not empty, send to firebase
        */
       if ($updater.$isEmpty()) {
-        return resolve();
+        return resolveDropFunction();
       }
 
       const $firebase = _firebaseAdmin.get(self);
 
       return $firebase.ref().update($updater.$keyMap())
-        .then(resolve)
-        .catch(original => reject(new FireDataError({
+        .then(() => resolveDropFunction())
+        .catch(original => rejectDropFunction(new FireDataError({
           $modelName,
           original,
           error         : 'drop-data-error',
@@ -2687,6 +2650,44 @@ function parseFirebaseReference($this, $path, { $hasID = false, $id } = {}) {
    * Remove first and last slash if exists
    */
   return $path;
+
+}
+
+
+function executeHookFunctions({ $model, hook, params = [], context }) {
+  /**
+   * Build promise array to return
+   */
+  const $promises = [];
+
+  /**
+   * Loop for each hook in $model
+   */
+  ($model.hooks[hook] || []).forEach(($function) => {
+    /**
+     * Check is a correct function
+     */
+    if (typeof $function !== 'function') return;
+
+    /**
+     * Build the Async Function
+     */
+    const $exec = async function waitHookResult() {
+      return $function.apply(context, params);
+    };
+
+    /**
+     * Push into Promise
+     */
+    $promises.push($exec());
+
+  });
+
+  /**
+   * Return a Promise containing
+   * all subpromise
+   */
+  return Promise.all($promises);
 
 }
 
