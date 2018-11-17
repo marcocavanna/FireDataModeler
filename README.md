@@ -1,16 +1,16 @@
 <div align="center">
-	<div>
-		<img width="256" src="media/logo.png" alt="Awesome Node.js">
-	</div>
-	<br>
-	<br>
+    <div>
+        <img width="256" src="media/logo.png" alt="Awesome Node.js">
+    </div>
+    <br>
+    <br>
   <h1>FireData Modeler</h1>
-	<br>
+    <br>
 </div>
 
 FireData Modeler is a NodeJS package to help maintain data on [Firebase Database](https://firebase.google.com/).
 
-It will help you to build Model for your data and syncronize it with other Model, avoiding multiple query and update on your backend API.
+It will help you to build Model for your data and synchronize it with other Model, avoiding multiple query and update on your backend API.
 
 With FireData Modeler you can choose exactly what do you want to save into your Database and how you can want to save it.
 You can apply validators and formatters to your data, that will be executed always and help you to get safe data to send to Firebase.
@@ -19,7 +19,7 @@ You can apply validators and formatters to your data, that will be executed alwa
 - [Example](#example)
     - [1. Install](#1-install)
     - [2. Require](#2-require)
-    - [3. Create Model](#3-create-model)
+    - [3. Create a Model](#3-create-a-model)
     - [4. Add Data](#4-add-data)
 - [FireData Type Definition](#firedata-type-definition)
   - [Declaring JavaScript Variable Type](#declaring-javascript-variable-type)
@@ -76,7 +76,7 @@ const FireDataModeler = require('@mooxed/fire-data-modeler');
 const Modeler = new FireDataModeler();
 ```
 
-#### 3. Create Model
+#### 3. Create a Model
 Create the Contact model using the Modeler instance
 ```js
 Modeler
@@ -228,7 +228,7 @@ ContactAdder({ name: 150 })
 ```
 
 ## FireData Type Definition
-The `FireData Type` is the definition of the type of data that must be writed into the object before sending it to Firebase.
+The `FireData Type` is the definition of the type of data that must be written into the object before sending it to Firebase.
 
 An example of a simple FireData Type could be
 ```js
@@ -240,10 +240,10 @@ An example of a simple FireData Type could be
   surname: '?String'
 }
 ```
-In this case we are telling our Modeler that in the field `name` there will be a String, and that it's required (with the `!`). Instead in the field `surname` __could__ be present a String and the data must be keep only if is a String (using the `?`)
+In this case, we are telling our Modeler that in the field `name` there will be a String and that it's required (with the `!`). Instead in the field `surname` __could__ be present a String and the data must be kept only if is a String (using the `?`)
 
 ### Declaring JavaScript Variable Type
-All type of Variable accepted from Firebase are accepted as `primitive` from the Modeler, as `String`, `Number`, `Boolean`, `Object` and `Array`.
+All type of Variables accepted from Firebase are accepted as `primitive` from the Modeler, as `String`, `Number`, `Boolean`, `Object` and `Array`.
 ```js
 Modeler.$model('Person', {
   model: {
@@ -265,7 +265,7 @@ Using the `primitive` variable type get you the ability to try the `autocast` me
     isMale: '!^Boolean'
   }
 ```
-Any type of data inserted into `isMale` field will be autoconverted into a Boolean.
+Any type of data inserted into `isMale` field will be auto-converted into a Boolean.
 
 This option will work with all variable type (String, Number, Boolean, Object, Array).
 
@@ -298,7 +298,7 @@ Another more complex example is
 as above, the translation of this is
 >Keep the Array of ID stored in `usersID` (wrapping Model in brackets `[ ]`) building Firebase Link like `{ user1: true, user2: true ... }` and for each users ID build user detail using model `UserDetail` and store the data into `users` field using same structure `{ user1: <Data>, user2: <Data> ... }`. Do it every time i'm uploading/downloading data (using the `=` symbol)
 
-The structure rapresentation of FireData Type Definition in this case is
+The structure representation of FireData Type Definition in this case is
 ```
   [ ? | ! ] [ > | = ] [ ModelName ] : [ ExchangeField ]
     /|        /|           /|               /|
@@ -326,11 +326,11 @@ A function example is
 }
 ```
 This will be translated in
->If `createdOn` is empty, run the `Now` function and put the result in this field (is referenced `>`). Instead, every time i'm updating data to Firebase, run `Now` function and store the result into `editedOn` (as it is bindend, using `=`)
+>If `createdOn` is empty, run the `Now` function and put the result in this field (is referenced `>`). Instead, every time I'm updating data to Firebase, run `Now` function and store the result into `editedOn` (as it is bonded, using `=`)
 
-The function will be invoked with the `this` binded to the parsed model, and can have multiple parameters that will be used as function arguments. The last argument appended is always an instance of the [`Talker`](#talker).
+The function will be invoked with the `this` bound to the parsed model and can have multiple parameters that will be used as function arguments. The last argument appended is always an instance of the [`Talker`](#talker).
 
-Arguments could specified after function invoke separated from function using `:`
+Arguments could be specified after function invoke separated from function using `:`
 
 ```js
 /**
@@ -378,7 +378,7 @@ Modeler
   })
 ```
 
-Function could also return a Promise, fullfilled with the result to store into the field: in this case, Modeler will wait untill function are resolved before uploading data to Database.
+The function could also return a Promise, fulfilled with the result to store into the field: in this case, Modeler will wait until function are resolved before uploading data to Database.
 
 ## Modeler
 
@@ -406,7 +406,7 @@ The _constructor_ object is the real definition of the Model and could have the 
 | `onDelete`   | `Function[]` | `false`  | `[]`    | Array of Function to execute while deleting data       |
 
 #### `model` {Object}
-The rapresentation of the Model that will be used through data parsing. The `model` could also have nested key.
+The representation of the Model that will be used through data parsing. The `model` could also have nested key.
 
 Each key of the Model object must be a correct [FireData Type Definition](#firedata-type-definition) (as described above).
 
@@ -441,13 +441,13 @@ It could contain the following properties.
 ##### `read` {String} <!-- omit in toc -->
 The main Model path. It is the path where the model will add data or where it will read and parse data while getting it. It will be auto-added to writes path array
 ##### `hasID` {Boolean=true} <!-- omit in toc -->
-Setting the `hasID` to `true` will tell the Talker that the model is an Array of Firebase Node. If you have a list of `Contact` for example it must be setted to true. Else, if you are managin some other properties without an ID it must be setted to false.
+Setting the `hasID` to `true` will tell the Talker that the model is an Array of Firebase Node. If you have a list of `Contact` for example it must be set to true. Else, if you are managing some other properties without an ID it must be set to false.
 ##### `writes` {Object[]} <!-- omit in toc -->
-An array of path where `Talker` will update data. Each path Object could contain
+An array of the path where `Talker` will update data. Each path Object could contain
 - `ref` {String} Required path reference
-- `queryOn` {[String]} The field to use to build query for data and get only the data to update
+- `queryOn` {[String]} The field to use to build the query for data and get only the data to update
 - `writeChild` {[String]} The child into put the updated data
-- `snapFilter` {[Function]} A function to execute to evaluate if child could be updated. If function return false, the child will be skippend and not updated
+- `snapFilter` {[Function]} A function to execute to evaluate if the child could be updated. If the function returns false, the child will be skipped and not updated
 - `model` {[String]} The model to use, must be an `Extractor` (you could read more on extractor later)
 
 Example
@@ -469,7 +469,7 @@ Example
 }
 ```
 
-By default, reference path in ID-based structure, the reference ID will be append to the path, so `data/company` on get/update/delete will be transformed automatically in `data/company/$id`. To manually set where the id have to be placed you can define it in the path string. A model referred only to user detail could have the path setted to `users/$id/detail`: the model will always be ID-Based but user id will be replaced in the path instead appended at the end.
+By default, reference path in ID-based structure, the reference ID will be appended to the path so `data/company` on get/update/delete will be transformed automatically in `data/company/$id`. To manually set where the id has to be placed you can define it in the path string. A model referred only to user detail could have the path set to `users/$id/detail`: the model will always be ID-Based but user id will be replaced in the path instead appended at the end.
 
 #### `validators` {Object[]}
 Validators key is an Array of object that must contain the following properties
@@ -529,18 +529,18 @@ Formatters function __mustn't__ be `async function` as they are evaluated in syn
 
 #### `onAdd | onSet | onGet | onUpdate | onDelete` {Function[]}
 Array of hook function to execute on `Model` event. Each function will receive as parameters the the parsed data (`null` on [\$delete](#deletemodelname)) and `$id` (if exists, else `undefined`). This function won't change data sendend to Firebase.
-Each function are executed at the same time but they could be `Promise` function. Talker operation will be wait untill all function will be executed before update data on Firebase.
+Each functions are executed at the same time but they could be `Promise` function. Talker operation will wait until all function will be executed before update data on Firebase.
 
-The `this` of the Hook function referr to the `Talker` instance.
+The `this` of the Hook function refers to the `Talker` instance.
 
 ### $extractor(_name_, _constructor_)
-An extractor is a simple model that will extract data from a father model to write only certain data to Databse instead of all field.
+An extractor is a simple model that will extract data from a father model to write only certain data to Database instead of all field.
 It could be used to save some basic information of the father model to some linked child.
 
 Example
 ```js
 /**
- * Suppose the Company Model is more complex that previous example
+ * Suppose the Company Model is more complex than the previous example
  * and that we want to save only the company name and email into the Contact node.
  * In this case we could use an extractor
  */
@@ -557,7 +557,7 @@ Modeler
 
 /**
  * When we declare the contact model
- * we can use the extractor instead the complete model
+ * we can use the extractor instead of the complete model
  * to save only name and email
  */
 Modeler
@@ -582,7 +582,7 @@ The extractor _constructor_ could have the following properties
 #### `model` {String}
 The name of the model to use and extract data
 #### `extract` {Object}
-The key to extract from model. Each key must be a `string`, to set optionality must start with `?` char, to set to required must start with `!`. It could contain the object key path into take the value.
+The key to extract from the model. Each key must be a `string`, to set optionality must start with `?` char, to set to required must start with `!`. It could contain the object key path into take the value.
 
 Example
 ```js
@@ -597,7 +597,7 @@ Same as Model validators property described above
 Same as Model formatters property described above
 
 ### $parser(_name_, _constructor_)
-A simple object parser that contain only the Model and that will return a parsed object withou writing data on Database. The constructor must contain only the `model`{Object} key that will be evaluated like the `model` of the [`$model`](#model-object) Function
+A simple object parser that contains only the Model and that will return a parsed object without writing data on Database. The constructor must contain only the `model`{Object} key that will be evaluated like the `model` of the [`$model`](#model-object) Function
 
 ### $function(_name_, _function_)
 Declare a function that could be used into Model Constructor as [`FireData Type`](#firedata-type-definition).
@@ -617,9 +617,9 @@ Modeler
 ### $filter(_name_, _function_)
 A function declaration that can be used to transform the field. The function will receive as first argument the current parsed value of the field and as last argument the instance of the [`Talker`](#talker). Any other arguments specified are passed to the function as `String`.
 
-The `this` of the functon is the complete parsed object
+The `this` of the function is the complete parsed object
 
-Filter function are evaluated in sync mode, then they musn't be a `Promise`
+Filter functions are evaluated in sync mode, then they mustn't be a `Promise`
 ```js
 Modeler
   .$filter('startOf', (value, type) => {
@@ -638,7 +638,7 @@ Modeler
 ```
 
 ## Talker
-Talker is the main object that let you to get/write data on Firebase Database.
+Talker is the main object that let you get/write data on Firebase Database.
 
 To use the Talker you have to get it from Modeler
 
@@ -793,9 +793,9 @@ ContactAdder({ name: 'Harrison', surname: 'Ford' })
 ### $set(_modelName_)
 Return a function that could be used to set data on Firebase Database.
 
-The returned function is a `Promise`, resolved once data has been correctly setted.
+The returned function is a `Promise`, resolved once data has been correctly set.
 
-This function is restricted to Model that are not ID-Based and could not be used with Model with ID.
+This function is restricted to Models that are not ID-Based and could not be used with Model with ID.
 
 ```js
 const SettingsSetter = Talker.$set('Settings');
@@ -811,9 +811,9 @@ SettingsSetter({ currency: 'EUR' })
 ### $update(_modelName_)
 Return a function that could be used to update data on Firebase Database.
 
-The returned function is a `Promise`, resolved once data has been correctly setted, fullfilled with an object with only updated data.
+The returned function is a `Promise`, resolved once data has been correctly set, fulfilled with an object with only updated data.
 
-Invoking this function will update not only the original contact, but also all other data setted in `writes` Array of Model Constructor. If writes path contain some query you can filter snap using [`snapFilter`](#paths-object) function to skip data update in certain case
+Invoking this function will update not only the original contact but also all other data setted in `writes` Array of Model Constructor. If writes path contains some query you can filter snap using [`snapFilter`](#paths-object) function to skip data update in certain case
 
 ```js
 const ContactUpdater = Talker.$update('Contact');
@@ -831,7 +831,7 @@ ContactUpdater($harrisonFordID, { name: 'Henry', surname: 'Ford' })
 ### $get(_modelName_)
 Return a function that could be used to get data from Firebase Database.
 
-The returned function is a `Promise` fullfilled with received data
+The returned function is a `Promise` fulfilled with received data
 
 ```js
 const ContactGetter = Talker.$get('Contact');
@@ -853,7 +853,7 @@ Return a function that could be used to delete data from Firebase Database.
 
 The returned function is a `Promise` resolved on data deleted.
 
-Invoking this function will delete not only the original contact, but also all other data setted in `writes` Array of Model Constructor. If writes path contain some query you can filter snap using [`snapFilter`](#paths-object) function to skip data update in certain case
+Invoking this function will delete not only the original contact but also all other data setted in `writes` Array of Model Constructor. If writes path contains some query you can filter snap using [`snapFilter`](#paths-object) function to skip data update in certain case
 
 ```js
 const ContactDeleter = Talker.$delete('Contact');
@@ -869,7 +869,7 @@ ContactDeleter($harrisonFordID)
 ### $drop(_modelName_)
 Drop entire node of a Model, removing all data from Firebase Database.
 
-No bindend/referenced data will be deleted, only the original one.
+No bounded/referenced data will be deleted, only the original one.
 
 ```js
 /**
@@ -881,7 +881,7 @@ Talker.$drop('Contact');
 ```
 
 ### $destroy()
-Destroy the Talker instance. After invoking this method no function could be used. This is usefull on ExpressJS (or any other way to build WebServer with NodeJS) to destroy the `WeakMap` associated to the Talker instance and free used memory.
+Destroy the Talker instance. After invoking this method no function could be used. This is useful on ExpressJS (or any other way to build WebServer with NodeJS) to destroy the `WeakMap` associated to the Talker instance and free used memory.
 
 Example Using ExpressJS
 ```js
