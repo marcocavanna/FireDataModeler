@@ -2149,6 +2149,7 @@ class FirebaseTalker {
                * execute hook functions if exists
                */
               .then(() => new Promise((resolveHook, rejectHook) => {
+                const $oldDataBuilded = $oldDataSource.$build();
                 const $promises = [];
 
                 /**
@@ -2164,7 +2165,9 @@ class FirebaseTalker {
                    * Build an async function to wait result
                    */
                   const $exec = async function waitResult() {
-                    const $result = await $function.apply(self, [$parsedData, $id]);
+                    const $result = await $function.apply(
+                      self, [$parsedData, $oldDataBuilded, $id]
+                    );
                     return $result;
                   };
 
