@@ -213,7 +213,7 @@ class FireDataModeler {
    * @param {Function} $callbackFunction Function to Execute
    * 
    */
-  $function($name, $callbackFunction) {
+  $function($name, $callbackFunction, $priority = 1000) {
     /**
      * Check a Function with the same name doesn't exists
      */
@@ -227,10 +227,14 @@ class FireDataModeler {
       throw new Error(`[ FireDataModeler ] - Callback function for '${$name}' must be a valid Function`);
     }
 
+    if (typeof $priority !== 'number' || $priority === Infinity || Number.isNaN($priority)) {
+      throw new Error(`[ FireDataModeler ] - Priority for function '${$name}' must be a valid Number`);
+    }
+
     /**
      * Add the function
      */
-    $functions[$name] = $callbackFunction;
+    $functions[$name] = { callback: $callbackFunction, priority: $priority };
 
     _functions.set(this, $functions);
 

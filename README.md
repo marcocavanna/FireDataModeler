@@ -41,7 +41,7 @@ You can apply validators and formatters to your data, that will be executed alwa
     - [`validators` {Object[]}](#validators-object-1)
     - [`formatters` {Function[]}](#formatters-function-1)
   - [$parser(_name_, _constructor_)](#parsername-constructor)
-  - [$function(_name_, _function_)](#functionname-function)
+  - [$function(_name_, _function_, _priority_)](#functionname-function-priority)
   - [$filter(_name_, _function_)](#filtername-function)
 - [Talker](#talker)
   - [Loading Talker](#loading-talker)
@@ -610,7 +610,7 @@ Same as Model formatters property described above
 ### $parser(_name_, _constructor_)
 A simple object parser that contains only the Model and that will return a parsed object without writing data on Database. The constructor must contain only the `model`{Object} key that will be evaluated like the `model` of the [`$model`](#model-object) Function
 
-### $function(_name_, _function_)
+### $function(_name_, _function_, _priority_)
 Declare a function that could be used into Model Constructor as [`FireData Type`](#firedata-type-definition).
 Name of the function must obviously be unique into the Model instance.
 
@@ -623,6 +623,31 @@ The function will be called binding the `this` to the parsed model (after evalua
  */
 Modeler
   .$function('Now', () => Date.now())
+```
+
+You can define Function priority execution. All default Functions are executed with default `priority === 1000`. Lower priority functions will be executed after higher priority functions. It means that you want to execute a function after another function you can set priority to a lower value
+
+```js
+Modeler
+  .$model('SomeModel', {
+    model: {
+      now: '>Now()',
+      tomorrow: '>Tomorrow():now'
+    },
+    paths: {
+      ...
+    }
+  })
+
+  .$function('Now', () => Date.now())
+
+  /**
+   * Priority 900 will be executed after default priority 1000
+   * it means that when Tomorrow function will be called, your are sure
+   * that Now result as been written
+   */
+  .$function('Tomorrow', ($date) => moment($date).add(1, 'd'), 900);
+
 ```
 
 ### $filter(_name_, _function_)
