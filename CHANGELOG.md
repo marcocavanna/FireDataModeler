@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.5` - 2018-11-18
+### `Added`
+- ['\<b52de94>'](https://github.com/marcocavanna/FireDataModeler/commit/b52de946962cd2cf45ad037d2d0f075d2a1cab62) Added possibility to set Priority for Function Executions
+
 ## `1.2.4` - 2018-11-17
 ### `Added`
 - ['<4e1899f>'](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) Added 4 new Hook function `afterAdd`, `afterUpdate`, `afterSet`, `afterDelete` that are executed in the same way of the `on` Hook functon, but after data changed on Database. They could be Async function and the main `Talker` function will wait for the resolution of Hooks before resolve itself.
