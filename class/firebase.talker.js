@@ -889,60 +889,76 @@ class FirebaseTalker {
                  * can compile it
                  */
                 if (!isGetter) {
-                  /**
-                   * Build function arguments
-                   */
-                  const $args = [];
 
                   /**
-                   * Get Args from parsed data
+                   * The function must be invoked only if
+                   * the source is undefined or if
+                   * the value is binded
                    */
-                  value.params.forEach(($param) => {
-                    $args.push($parsed.$get($param));
-                  });
-
-                  /**
-                   * Add Talker instance as last args
-                   */
-                  $args.push(self);
-
-                  /**
-                   * Execute the function
-                   */
-                  const $fnResult = callback.apply(
-                    $parsed instanceof FireDataObject
-                      ? $parsed.$build()
-                      : $parsed,
-                    $args
-                  );
-
-                  /**
-                   * Check if $fnResult is a Promise
-                   */
-                  if (typeof $fnResult === 'object'
-                    && $fnResult !== null
-                    && typeof $fnResult.then === 'function'
-                    && typeof $fnResult.catch === 'function') {
-
+                  if (sourceUndefined || value.bind) {
                     /**
-                     * If is a Promise, wait for the
-                     * resolution, and then
-                     * place the result
+                     * Build function arguments
                      */
-                    $promises.push(
-                      new Promise((resolveFnResult, rejectFnResult) => {
-                        $fnResult
-                          .then(($result) => {
-                            setAndCheck($result, path, value);
-                            resolveFnResult();
-                          })
-                          .catch(e => rejectFnResult(`${$modelName.toLowerCase()}/${e}`));
-                      })
+                    const $args = [];
+  
+                    /**
+                     * Get Args from parsed data
+                     */
+                    value.params.forEach(($param) => {
+                      $args.push($parsed.$get($param));
+                    });
+  
+                    /**
+                     * Add Talker instance as last args
+                     */
+                    $args.push(self);
+  
+                    /**
+                     * Execute the function
+                     */
+                    const $fnResult = callback.apply(
+                      $parsed instanceof FireDataObject
+                        ? $parsed.$build()
+                        : $parsed,
+                      $args
                     );
+  
+                    /**
+                     * Check if $fnResult is a Promise
+                     */
+                    if (typeof $fnResult === 'object'
+                      && $fnResult !== null
+                      && typeof $fnResult.then === 'function'
+                      && typeof $fnResult.catch === 'function') {
+  
+                      /**
+                       * If is a Promise, wait for the
+                       * resolution, and then
+                       * place the result
+                       */
+                      $promises.push(
+                        new Promise((resolveFnResult, rejectFnResult) => {
+                          $fnResult
+                            .then(($result) => {
+                              setAndCheck($result, path, value);
+                              resolveFnResult();
+                            })
+                            .catch(e => rejectFnResult(`${$modelName.toLowerCase()}/${e}`));
+                        })
+                      );
+                    }
+  
+                    else {
+                      setAndCheck($fnResult, path, value);
+                    }
                   }
 
-                  else {
-                    setAndCheck($fnResult, path, value);
+                  /**
+                   * Else, if source is not undefined, must
+                   * simply transport the value from source to parsed
+                   */
+                  else if (!sourceUndefined) {
+                    $parsed.$set(path, $source);
                   }
                 }
 
