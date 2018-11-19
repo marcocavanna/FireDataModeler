@@ -4,17 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.6` - 2018-11-19
+### `Fixed`
+- [`<8830c79>`](https://github.com/marcocavanna/FireDataModeler/commit/8830c795428ad76e62e5fcfa997823abe591d204) Fixed an issue that caused a 'Referenced' function to be invoked on each model parsing
+
 ## `1.2.5` - 2018-11-18
 ### `Added`
-- ['\<b52de94>'](https://github.com/marcocavanna/FireDataModeler/commit/b52de946962cd2cf45ad037d2d0f075d2a1cab62) Added possibility to set Priority for Function Executions
+- [`<b52de94>`](https://github.com/marcocavanna/FireDataModeler/commit/b52de946962cd2cf45ad037d2d0f075d2a1cab62) Added possibility to set Priority for Function Executions
 
 ## `1.2.4` - 2018-11-17
 ### `Added`
-- ['<4e1899f>'](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) Added 4 new Hook function `afterAdd`, `afterUpdate`, `afterSet`, `afterDelete` that are executed in the same way of the `on` Hook functon, but after data changed on Database. They could be Async function and the main `Talker` function will wait for the resolution of Hooks before resolve itself.
+- [`<4e1899f>`](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) Added 4 new Hook function `afterAdd`, `afterUpdate`, `afterSet`, `afterDelete` that are executed in the same way of the `on` Hook functon, but after data changed on Database. They could be Async function and the main `Talker` function will wait for the resolution of Hooks before resolve itself.
 
 ### `Changed`
-- ['<4e1899f>'](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) The `onDelete` Hook function now receive as first argument a copy of the raw data on the Database for the deleting element.
-- ['<1ba121c>'](https://github.com/marcocavanna/FireDataModeler/commit/1ba121c8b000e84470ba8424ec339edbba5ad507) The `onUpdate` Hook function now receive as second argument the old data
+- [`<4e1899f>`](https://github.com/marcocavanna/FireDataModeler/commit/4e1899fd254da0e8767310e342c554834bf30ad6) The `onDelete` Hook function now receive as first argument a copy of the raw data on the Database for the deleting element.
+- [`<1ba121c>`](https://github.com/marcocavanna/FireDataModeler/commit/1ba121c8b000e84470ba8424ec339edbba5ad507) The `onUpdate` Hook function now receive as second argument the old data
   ```js
   {
     ...
@@ -31,10 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## `1.2.3` - 2018-11-17
 ### `Changed`
-- ['<ca90232>'](https://github.com/marcocavanna/FireDataModeler/commit/ca9023283602889ab9f396710a030c4782c2a6de) The `this` keyword in Hook Functions (onAdd, onGet, onSet, onUpdate, onDelete) now referr to the current instance of `Talker`
+- [`<ca90232>`](https://github.com/marcocavanna/FireDataModeler/commit/ca9023283602889ab9f396710a030c4782c2a6de) The `this` keyword in Hook Functions (onAdd, onGet, onSet, onUpdate, onDelete) now referr to the current instance of `Talker`
 
 ### `Fixed`
-- ['<eadd1b3>'](https://github.com/marcocavanna/FireDataModeler/commit/eadd1b322de015031015ecb7ca058f28810bdb71) `$delete` function now will convert correctly a String type $id in an Array to delete multiple data
+- [`<eadd1b3>`](https://github.com/marcocavanna/FireDataModeler/commit/eadd1b322de015031015ecb7ca058f28810bdb71) `$delete` function now will convert correctly a String type $id in an Array to delete multiple data
 
 ## `1.2.2` - 2018-11-16
 ### `Added`
