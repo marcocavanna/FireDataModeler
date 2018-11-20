@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `1.2.7` - 2018-11-20
+### `Fixed`
+- [`<22398d2>`](https://github.com/marcocavanna/FireDataModeler/commit/22398d2312291aed9a597d23d2319c19bd900dca) Fixed an error that caused the double replacement in path string using FireDataObject while parsing data
+
 ## `1.2.6` - 2018-11-19
 ### `Fixed`
 - [`<8830c79>`](https://github.com/marcocavanna/FireDataModeler/commit/8830c795428ad76e62e5fcfa997823abe591d204) Fixed an issue that caused a 'Referenced' function to be invoked on each model parsing
