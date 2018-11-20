@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## `1.2.8` - 2018-11-20
+## `1.2.9` - 2018-11-20
 ### `Added`
 - [`<ae9b0c2>`](https://github.com/marcocavanna/FireDataModeler/commit/ae9b0c2b82958ce222742c706c6f41ecb583b967) `$parsePath` function added to Talker to return a parsed path string using replacers
+- [`<dbb6b37>`](https://github.com/marcocavanna/FireDataModeler/commit/dbb6b37288d1e725cef46213b6a2e6e87d152fec) Can now use String and Numbers parameter in calling functions
 
 ### `Changed`
 - [`<ae9b0c2>`](https://github.com/marcocavanna/FireDataModeler/commit/ae9b0c2b82958ce222742c706c6f41ecb583b967) `$update` function refactored to accept also multiple id updating
