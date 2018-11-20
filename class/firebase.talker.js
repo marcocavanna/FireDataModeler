@@ -1940,8 +1940,9 @@ class FirebaseTalker {
         if (!$hasID) {
           $oldLoadedData = $data;
           $data = $id;
-          $allUpdatingData = $id;
+          $allUpdatingData.__tmpID__ = $id;
           $id = undefined;
+          $isSingle = true;
         }
 
         /**
@@ -1994,18 +1995,30 @@ class FirebaseTalker {
           const $oldData = {};
 
           /**
-           * Check if is Single
+           * Check if is Single or
+           * if is without id
            */
-          if ($isSingle && $oldLoadedData) {
+          if ($isSingle) {
+
+            const $loadData = $oldLoadedData
+              ? self.$parse($modelName)($oldLoadedData, { isGetter: true, newData: $data })
+              : self.$get($modelName)($id, { rawData: true, newData: $data });
+
             /**
              * Parse old Data
              */
-            return self.$parse($modelName)($oldLoadedData, { isGetter: true, newData: $data })
+            return $loadData
               .then(($parsed) => {
                 /**
                  * Save data
                  */
-                $oldData[Object.getOwnPropertyNames($allUpdatingData)[0]] = $parsed;
+                if ($hasID) {
+                  $oldData[Object.getOwnPropertyNames($allUpdatingData)[0]] = $parsed;
+                }
+
+                else {
+                  $oldData.__tmpID__ = $parsed;
+                }
 
                 /**
                  * Resolve the loader
@@ -2207,7 +2220,14 @@ class FirebaseTalker {
                           $path.ref = parseFirebaseReference(
                             self, $path.ref, { $hasID: !$path.queryOn, $id: $updatingID }
                           );
-              
+
+                          /**
+                           * Remove tmpID if Exists
+                           */
+                          if (!$hasID) {
+                            $path.ref = $path.ref.replace(/\/__tmpID__/gi, '');
+                          }
+
                           return $path;
                         })
                         .forEach(($path) => {
