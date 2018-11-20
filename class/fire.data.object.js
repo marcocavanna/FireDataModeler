@@ -453,7 +453,7 @@ class FireDataObject {
     });
 
     $rootKeys
-      .forEach($callback.bind($context));
+      .forEach($key => $callback.apply($context, [$key, new FireDataObject(this.$get($key))]));
 
     return this;
 

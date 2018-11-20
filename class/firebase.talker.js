@@ -156,6 +156,22 @@ class FirebaseTalker {
 
 
   /**
+   * @function $parsePath
+   * 
+   * @param {String} path Path to Parse
+   * 
+   * @description
+   * Return a parsed Path using current placeholders
+   * 
+   * @returns {String} Path Parsed
+   * 
+   */
+  $parsePath(path) {
+    return parseFirebaseReference(this, path);
+  }
+
+
+  /**
    * @function $destroy
    * 
    * @description
@@ -1913,6 +1929,8 @@ class FirebaseTalker {
          * Check ID Fields
          */
         const $hasID = $model.paths.hasID;
+        let $isSingle;
+        let $allUpdatingData = {};
 
         /**
          * Check function params, if path
@@ -1922,34 +1940,42 @@ class FirebaseTalker {
         if (!$hasID) {
           $oldLoadedData = $data;
           $data = $id;
+          $allUpdatingData = $id;
           $id = undefined;
         }
 
         /**
-         * Check ID exists
+         * Check ID exists and data exists
          */
-        if ($hasID && typeof $id !== 'string') {
-          throw new FireDataError({
-            $modelName,
-            error         : 'invalid-id',
-            functionName  : '$update',
-            message       : `Write path for Model '${$modelName}' requires an ID`
-          });
+        if ($hasID) {
+          /**
+           * If $id is a string, associate data
+           */
+          if (typeof $id === 'string') {
+            $allUpdatingData = { [$id]: $data };
+            $isSingle = true;
+          }
+
+          /**
+           * Else change the updating data
+           */
+          else if (typeof $id === 'object' && $id !== null && !Array.isArray($id)) {
+            $allUpdatingData = $id;
+            $isSingle = false;
+          }
+
+          /**
+           * Else, throw error
+           */
+          else {
+            throw new FireDataError({
+              $modelName,
+              error         : 'invalid-id',
+              functionName  : '$update',
+              message       : `Write path for Model '${$modelName}' requires an ID`
+            });
+          }
         }
-
-        /**
-         * Load the Writes Path
-         */
-        const $paths = clonePathsArray($model.paths.writes)
-          .map(($path) => {
-            /**
-             * Update path reference to set the ID
-             * only if is not queried
-             */
-            $path.ref = parseFirebaseReference(self, $path.ref, { $hasID: !$path.queryOn, $id });
-
-            return $path;
-          });
 
         /**
          * Init Variables
@@ -1958,239 +1984,409 @@ class FirebaseTalker {
         const $updater = new FireDataObject();
 
         /**
-         * Load old data from Firebase, if is not proposed
+         * Phase 1.
+         * Get oldLoadedData if is not proposed
          */
-        const $loadData = $oldLoadedData
-          ? self.$parse($modelName)($oldLoadedData, { isGetter: true, newData: $data })
-          : self.$get($modelName)($id, { rawData: true, newData: $data });
+        new Promise((resolveLoadOldData, rejectLoadOldData) => {
+          /**
+           * Build Old Data Object
+           */
+          const $oldData = {};
 
-        $loadData
-          .then(($oldData) => {
-
+          /**
+           * Check if is Single
+           */
+          if ($isSingle && $oldLoadedData) {
             /**
-             * Build FireDataObject
+             * Parse old Data
              */
-            const $dataSource = new FireDataObject($data);
-            const $oldDataSource = new FireDataObject($oldData);
-            let $parsedData;
-
-            /**
-             * If no olded data was provided check
-             * old data exists
-             */
-            if (!$oldLoadedData && $oldDataSource.$isEmpty()) {
-              return rejectUpdaterFunction(new FireDataError({
-                $modelName,
-                error         : 'data-not-found',
-                functionName  : '$update',
-                message       : `Data to update model '${$modelName}' was not found on Database`
-              }));
-            }
-
-            /**
-             * Build the new Object
-             */
-            const $updatedObject = $oldDataSource.$clone().$merge($dataSource);
-
-            /**
-             * Check new Data are Valid
-             */
-            return self.$parse($modelName)(
-              $updatedObject.$build(), { omitNull: false, oldData: $oldData }
-            )
+            return self.$parse($modelName)($oldLoadedData, { isGetter: true, newData: $data })
               .then(($parsed) => {
+                /**
+                 * Save data
+                 */
+                $oldData[Object.getOwnPropertyNames($allUpdatingData)[0]] = $parsed;
 
                 /**
-                 * Build parsed Source
+                 * Resolve the loader
                  */
-                const $parsedSource = new FireDataObject($parsed);
-                $parsedData = $parsedSource.$build();
-
-                const $oldDataModels = {
-                  [$modelName]: $oldDataSource
-                };
-
-                const $newDataModels = {
-                  [$modelName]: $parsedSource
-                };
-
-                const $diff = {
-                  [$modelName]: $oldDataSource.$diff($parsedSource)
-                };
-
-                /**
-                 * For Each path, build the diff model
-                 * if doesn't exists
-                 */
-                $paths.forEach(($path) => {
-                  /**
-                   * Get the correct path model to use
-                   */
-                  const $pathModel = $path.model || $modelName;
-
-                  /**
-                   * If Model is not loaded, then build
-                   * the diff object
-                   */
-                  if (!$oldDataModels[$pathModel] || !$newDataModels[$pathModel]) {
-                    $oldDataModels[$pathModel] = new FireDataObject(self.$extract($pathModel)(
-                      $oldDataSource.$build(),
-                      { omitNull: false }
-                    ));
-                    $newDataModels[$pathModel] = new FireDataObject(self.$extract($pathModel)(
-                      $parsedSource.$build(),
-                      { omitNull: false }
-                    ));
-                  }
-
-                  /**
-                   * Generate Diff Key
-                   */
-                  if (!$diff[$pathModel]) {
-                    $diff[$pathModel] = $oldDataModels[$pathModel].$diff(
-                      $newDataModels[$pathModel]
-                    );
-                  }
-                });
-
-                /**
-                 * Once all Diff Models are builded
-                 * create the $updater object to update
-                 * firebase database
-                 */
-
-                const $updatedPath = [];
-                const $updatePromises = [];
-
-                /**
-                 * Update all paths
-                 */
-                $paths.forEach(($path) => {
-                  /**
-                   * Skip updated path
-                   */
-                  if ($updatedPath.indexOf($path.ref) === -1) {
-                    /**
-                     * Set the Path Model
-                     */
-                    const $pathModel = $path.model || $modelName;
-
-                    /**
-                     * Set Path as updated
-                     */
-                    $updatedPath.push($path.ref);
-
-                    /**
-                     * If ref must not be ordered, then save
-                     * the updater key
-                     */
-                    if (typeof $path.queryOn !== 'string' || typeof $path.writeChild !== 'string' || !$hasID) {
-                      /**
-                       * Generate the updater key
-                       */
-                      $diff[$pathModel].$each(({ path, value }) => {
-                        $updater.$set(`${$path.ref}/${path}`, value);
-                      });
-                    }
-
-                    /**
-                     * Else, must build a Query
-                     */
-                    else {
-                      $updatePromises.push(
-                        new Promise((resolveQuery, rejectQuery) => {
-                          $firebase.ref($path.ref)
-                            .orderByChild($path.queryOn).equalTo($id).once('value', ($snapshots) => {
-                              /**
-                               * For each snapshot found, build the update key
-                               */
-                              $snapshots.forEach(($snap) => {
-                                /**
-                                 * Check if must filter snapshot
-                                 */
-                                if (typeof $path.snapFilter === 'function') {
-                                  if (!$path.snapFilter($snap)) return;
-                                }
-
-                                /**
-                                 * Create Updater Path for Snapshot
-                                 */
-                                $diff[$pathModel].$each(({ path, value }) => {
-                                  $updater.$set(`${$path.ref}/${$snap.key}/${$path.writeChild}/${path}`, value);
-                                });
-                              });
-
-                              /**
-                               * Resolve query Updater
-                               */
-                              return resolveQuery();
-
-                            },
-                            
-                            original => rejectQuery(new FireDataError({
-                              $modelName,
-                              original,
-                              error         : 'database-query-error',
-                              functionName  : '$parse evalQuery',
-                              message       : `Error on loading data for path '${$path.ref}' ordered by '${$path.queryOn}'`,
-                              data          : { path: $path }
-                            })));
-                        })
-                      );
-                    }
-                  }
-                });
-
-                /**
-                 * Once Updater has been created
-                 * and all promises are resolved
-                 * send the updater to firebase
-                 */
-                return Promise.all($updatePromises);
-
+                return resolveLoadOldData($oldData);
               })
-              
-              /**
-               * Before sending the Updater must
-               * execute hook functions if exists
-               */
-              .then(() => executeHookFunctions({
-                $model,
-                hook     : 'onUpdate',
-                params   : [$parsedData, $oldDataSource.$build(), $id],
-                context  : self
-              }))
-
-              /**
-               * Send the Updater
-               */
-              .then(() => $firebase.ref().update($updater.$keyMap()))
-
-              /**
-               * Execute hook function for afterUpdate
-               */
-              .then(() => executeHookFunctions({
-                $model,
-                hook     : ['afterUpdate'],
-                params   : [$parsedData, $oldDataSource.$build(), $id],
-                context  : self
-              }))
-
-              /**
-               * Resolve returning the updated Key
-               */
-              .then(() => resolveUpdaterFunction($updater.$build()))
-
-              .catch(original => rejectUpdaterFunction(new FireDataError({
+              .catch(original => rejectLoadOldData(new FireDataError({
                 $modelName,
                 original,
-                error         : 'update-data-error',
-                functionName  : '$update',
-                message       : `An error occured while updating data for ${$modelName}`,
-                data          : { updater: $updater.$keyMap() }
+                error         : 'load-old-data-error',
+                functionName  : '$update $parse',
+                message       : `An error occured while parsing old data with Model '${$modelName}'`
               })));
+          }
 
+          /**
+           * Else, skip old data, and get all new
+           * data from database
+           */
+          const $loadOldDataPromises = [];
+
+          /**
+           * Loop through all ID
+           */
+          Object.getOwnPropertyNames($allUpdatingData).forEach(($updatingDataId) => {
+            $loadOldDataPromises.push(
+              new Promise((resolveDataIDLoading, rejectDataIDLoading) => {
+                self.$get($modelName)($updatingDataId,
+                  { rawData: true, newData: $allUpdatingData[$updatingDataId] })
+                  .then(($parsed) => {
+                    /**
+                     * Save new Data
+                     */
+                    $oldData[$updatingDataId] = $parsed;
+
+                    /**
+                     * Resolve the Loader
+                     */
+                    return resolveDataIDLoading();
+                  })
+                  .catch(original => rejectDataIDLoading(original));
+              })
+            );
           });
+
+          /**
+           * Wait the Resolution of all promises
+           */
+          return Promise.all($loadOldDataPromises)
+            .then(() => resolveLoadOldData($oldData))
+            .catch(original => rejectLoadOldData(new FireDataError({
+              $modelName,
+              original,
+              error         : 'get-old-data-error',
+              functionName  : '$update $get',
+              message       : `An error occured while getting old data with Model '${$modelName}'`
+            })));
+
+        })
+
+          .then(($allOldData) => {
+            /**
+             * Build FireDataObject
+             * for allUpdating and allOld data
+             */
+            const $allOldDataSource = new FireDataObject($allOldData);
+            const $allUpdatingDataSource = new FireDataObject($allUpdatingData);
+
+            /**
+             * Build a Promises Array to Update all Data
+             */
+            const $buildUpdaterPromise = [];
+            const $updatingIDs = [];
+
+            /**
+             * Init parsed data
+             */
+            const $parsedData = {};
+
+            /**
+             * Loop each updating data
+             */
+            $allUpdatingDataSource.$eachRoot(($updatingID, $dataSource) => {
+
+              $updatingIDs.push($updatingID);
+
+              /**
+               * Build the Promise
+               */
+              $buildUpdaterPromise.push(
+                new Promise((resolveBuildUpdater, rejectBuildUpdater) => {
+                  /**
+                   * Get the Old Data Source
+                   */
+                  const $oldData = $allOldDataSource.$get($updatingID);
+                  const $oldDataSource = new FireDataObject($oldData);
+    
+                  /**
+                   * Check Data Exists
+                   */
+                  if ($oldDataSource.$isEmpty()) {
+                    return rejectBuildUpdater(new FireDataError({
+                      $modelName,
+                      error         : 'data-not-found',
+                      functionName  : '$update $buildUpdater',
+                      message       : `Data to update model '${$modelName}' for ID '${$updatingID}' was not found on Database`
+                    }));
+                  }
+
+                  /**
+                   * Build the new Object
+                   */
+                  const $updatedObject = $oldDataSource.$clone().$merge($dataSource);
+
+                  /**
+                   * Parse the new Data
+                   */
+                  return self.$parse($modelName)(
+                    $updatedObject.$build(), { omitNull: false, oldData: $oldData }
+                  )
+                    .then(($parsed) => {
+                      /**
+                       * Build the Parsed Source
+                       */
+                      const $parsedSource = new FireDataObject($parsed);
+
+                      /**
+                       * Save the Parsed Data
+                       */
+                      $parsedData[$updatingID] = $parsedSource.$build();
+
+                      /**
+                       * Build the Model
+                       */
+                      const $oldDataModels = {
+                        [$modelName]: $oldDataSource
+                      };
+
+                      const $newDataModels = {
+                        [$modelName]: $parsedSource
+                      };
+
+                      const $diffModels = {
+                        [$modelName]: $oldDataSource.$diff($parsedSource)
+                      };
+
+                      /**
+                       * For Each path, build the diff model
+                       * if doesn't exists
+                       */
+                      $model.paths.writes.forEach(($path) => {
+                        /**
+                         * Get the correct path model to use
+                         */
+                        const $pathModel = $path.model || $modelName;
+
+                        /**
+                         * If Model is not loaded, then build
+                         * the diff object
+                         */
+                        if (!$oldDataModels[$pathModel] || !$newDataModels[$pathModel]) {
+                          $oldDataModels[$pathModel] = new FireDataObject(self.$extract($pathModel)(
+                            $oldDataSource.$build(),
+                            { omitNull: false }
+                          ));
+                          $newDataModels[$pathModel] = new FireDataObject(self.$extract($pathModel)(
+                            $parsedSource.$build(),
+                            { omitNull: false }
+                          ));
+                        }
+
+                        /**
+                         * Generate Diff Key
+                         */
+                        if (!$diffModels[$pathModel]) {
+                          $diffModels[$pathModel] = $oldDataModels[$pathModel].$diff(
+                            $newDataModels[$pathModel]
+                          );
+                        }
+                      });
+
+                      /**
+                       * Once all Diff Models are builded
+                       * create the $updater object to update
+                       * firebase database
+                       */
+                      const $updatedPath = [];
+                      const $updatePromises = [];
+
+                      /**
+                       * Update all Paths
+                       */
+                      clonePathsArray($model.paths.writes)
+                        .map(($path) => {
+                          /**
+                           * Update path reference to set the ID
+                           * only if is not queried
+                           */
+                          $path.ref = parseFirebaseReference(
+                            self, $path.ref, { $hasID: !$path.queryOn, $id: $updatingID }
+                          );
+              
+                          return $path;
+                        })
+                        .forEach(($path) => {
+                          /**
+                           * Skip updated path
+                           */
+                          if ($updatedPath.indexOf($path.ref) === -1) {
+                            /**
+                             * Set the Path Model
+                             */
+                            const $pathModel = $path.model || $modelName;
+
+                            /**
+                             * Set Path as updated
+                             */
+                            $updatedPath.push($path.ref);
+
+                            /**
+                             * If ref must not be ordered, then save
+                             * the updater key
+                             */
+                            if (typeof $path.queryOn !== 'string' || typeof $path.writeChild !== 'string' || !$hasID) {
+                              /**
+                               * Generate the updater key
+                               */
+                              $diffModels[$pathModel].$each(({ path, value }) => {
+                                $updater.$set(`${$path.ref}/${path}`, value);
+                              });
+                            }
+
+                            /**
+                            * Else, must build a Query
+                            */
+                            else {
+                              $updatePromises.push(
+                                new Promise((resolveQuery, rejectQuery) => {
+                                  $firebase.ref($path.ref)
+                                    .orderByChild($path.queryOn).equalTo($updatingID).once('value', ($snapshots) => {
+                                      /**
+                                      * For each snapshot found, build the update key
+                                      */
+                                      $snapshots.forEach(($snap) => {
+                                        /**
+                                        * Check if must filter snapshot
+                                        */
+                                        if (typeof $path.snapFilter === 'function') {
+                                          if (!$path.snapFilter($snap)) return;
+                                        }
+
+                                        /**
+                                        * Create Updater Path for Snapshot
+                                        */
+                                        $diffModels[$pathModel].$each(({ path, value }) => {
+                                          $updater.$set(`${$path.ref}/${$snap.key}/${$path.writeChild}/${path}`, value);
+                                        });
+                                      });
+
+                                      /**
+                                      * Resolve query Updater
+                                      */
+                                      return resolveQuery();
+
+                                    },
+                                    
+                                    original => rejectQuery(new FireDataError({
+                                      $modelName,
+                                      original,
+                                      error         : 'database-query-error',
+                                      functionName  : '$parse evalQuery',
+                                      message       : `Error on loading data for path '${$path.ref}' ordered by '${$path.queryOn}'`,
+                                      data          : { path: $path }
+                                    })));
+                                })
+                              );
+                            }
+                          }
+                        });
+
+                      /**
+                       * Wait for the resolution of
+                       * all updater promises before continue
+                       */
+                      return Promise.all($updatePromises)
+                        .then(() => resolveBuildUpdater())
+                        .catch(original => rejectBuildUpdater(original));
+
+                    });
+
+                })
+              );
+
+            }, self);
+
+            /**
+             * Wait the Resolution of all
+             * updater promises
+             */
+            return Promise.all($buildUpdaterPromise)
+              .then(() => {
+                /**
+                 * Build Hook Params
+                 */
+                const $hookParams = [];
+
+                /**
+                 * If was single update, return
+                 * only the first data $id
+                 */
+                if ($isSingle) {
+                  $hookParams.push(
+                    $parsedData[$updatingIDs[0]],
+                    $allOldDataSource.$get($updatingIDs[0]),
+                    $updatingIDs[0]
+                  );
+                }
+
+                else {
+                  $hookParams.push(
+                    $parsedData,
+                    $allOldDataSource.$build(),
+                    $updatingIDs
+                  );
+                }
+
+                /**
+                 * Return the Hooks Params
+                 */
+                return Promise.resolve($hookParams);
+
+              })
+              .catch(original => Promise.reject(original));
+
+          })
+    
+          /**
+           * Before sending the Updater must
+           * execute hook functions if exists
+           */
+          .then($hookParams => executeHookFunctions({
+            $model,
+            hook     : 'onUpdate',
+            params   : $hookParams,
+            context  : self
+          }))
+
+          /**
+           * Send the Updater to Firebase
+           */
+          .then($hookParams => $firebase.ref().update($updater.$keyMap())
+            .then(() => Promise.resolve($hookParams))
+            .catch(original => Promise.reject(original)))
+
+          /**
+           * Execute hook functions after update
+           */
+          .then($hookParams => executeHookFunctions({
+            $model,
+            hook     : 'afterUpdate',
+            params   : $hookParams,
+            context  : self
+          }))
+
+          /**
+           * Resolve Updater Functions
+           */
+          .then(() => resolveUpdaterFunction($updater.$build()))
+
+          /**
+           * Catch Process Errors
+           */
+          .catch(original => rejectUpdaterFunction(new FireDataError({
+            $modelName,
+            original,
+            error         : 'update-data-error',
+            functionName  : '$update',
+            message       : `An error occured while updating data for ${$modelName}`,
+            data          : { updater: $updater.$keyMap() }
+          })));
+
       });
     };
 
@@ -2737,7 +2933,9 @@ function executeHookFunctions({ $model, hook, params = [], context }) {
    * Return a Promise containing
    * all subpromise
    */
-  return Promise.all($promises);
+  return Promise.all($promises)
+    .then(() => Promise.resolve(params))
+    .catch(() => Promise.reject());
 
 }
 
