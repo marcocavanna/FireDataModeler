@@ -128,7 +128,7 @@ class FireDataObject {
      * Found key using regexp
      */
     $keys.forEach(({ path, value }) => {
-      const _path = _purgePathString(path.replace(new RegExp(escapeRegExp(keyPath), 'g'), ''));
+      const _path = _purgePathString(path.replace(new RegExp(`^${escapeRegExp(keyPath)}`, 'g'), ''));
       _keys.push({
         value,
         path   : _path,
