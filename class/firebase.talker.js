@@ -921,7 +921,47 @@ class FirebaseTalker {
                      * Get Args from parsed data
                      */
                     value.params.forEach(($param) => {
-                      $args.push($parsed.$get($param));
+                      /**
+                       * Check param is string
+                       * double quoted
+                       */
+                      if (/^"(.+)"$/.test($param)) {
+                        const param = $param.match(/^"(.+)"$/)[1];
+                        $args.push(param);
+                      }
+
+                      /**
+                       * Check param is string
+                       * single quoted
+                       */
+                      else if (/^'(.+)'$/.test($param)) {
+                        const param = $param.match(/^'(.+)'$/)[1];
+                        $args.push(param);
+                      }
+
+                      /**
+                       * Check param is string
+                       * backtick quoted
+                       */
+                      else if (/^`(.+)`$/.test($param)) {
+                        const param = $param.match(/^`(.+)`$/)[1];
+                        $args.push(param);
+                      }
+
+                      /**
+                       * Check param is number
+                       */
+                      else if (/^\d+$/.test($param)) {
+                        $args.push(+$param);
+                      }
+
+                      /**
+                       * Else search for param into
+                       * parsed
+                       */
+                      else {
+                        $args.push($parsed.$get($param));
+                      }
                     });
   
                     /**
