@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## `1.2.7` - 2018-11-20
+## `1.2.8` - 2018-11-20
+### `Added`
+- [`<ae9b0c2>`](https://github.com/marcocavanna/FireDataModeler/commit/ae9b0c2b82958ce222742c706c6f41ecb583b967) `$parsePath` function added to Talker to return a parsed path string using replacers
+
+### `Changed`
+- [`<ae9b0c2>`](https://github.com/marcocavanna/FireDataModeler/commit/ae9b0c2b82958ce222742c706c6f41ecb583b967) `$update` function refactored to accept also multiple id updating
+
 ### `Fixed`
 - [`<22398d2>`](https://github.com/marcocavanna/FireDataModeler/commit/22398d2312291aed9a597d23d2319c19bd900dca) Fixed an error that caused the double replacement in path string using FireDataObject while parsing data
+- [`<53a498f>`](https://github.com/marcocavanna/FireDataModeler/commit/53a498f86b9903d06145496f1705be6590af45b9) Fixed an error that will cause unexpected updating in model non ID-Based
 
 ## `1.2.6` - 2018-11-19
 ### `Fixed`
@@ -51,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed`
 - [`<10b56f1>`](https://github.com/marcocavanna/FireDataModeler/commit/10b56f1882df2e312de700b0920f55ff2aec1f50) $update function now return only the key updated
 - [`<62d83d4>`](https://github.com/marcocavanna/FireDataModeler/commit/62d83d46ed02a7479c3d9b1ee018c8c134c17289) Changed the execution of validators function. Now are not while getting data
-- 
+
 ### `Fixed`
 - [`<404d99c>`](https://github.com/marcocavanna/FireDataModeler/commit/404d99cdec4dedc4b3ecef5a736af8fa247374ba) Fixed an Issue with Add Data ID parameters
 - [`<c5d8d5d>`](https://github.com/marcocavanna/FireDataModeler/commit/c5d8d5d7d4d57111954363fcffc6d9d2a8db618d) Fixed an Issue while using $id placeholder into `Paths` inf $update function
