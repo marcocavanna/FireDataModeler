@@ -1478,7 +1478,7 @@ class FirebaseTalker {
              * If dataSnapshot doesn't exists
              * then return a null value
              */
-            if (!$snapshot.exists()) {
+            if (!$snapshot.exists() && $id) {
               return resolveData(null);
             }
 
@@ -1486,7 +1486,7 @@ class FirebaseTalker {
              * Else, must load a shallow copy of the data,
              * and must resolve the parsed model
              */
-            return self.$parse($modelName)($snapshot.exportVal(), {
+            return self.$parse($modelName)($snapshot.exportVal() || {}, {
               omitNull, isGetter: true, rawData, newData
             })
               .then(resolveData)
