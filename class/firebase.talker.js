@@ -342,7 +342,8 @@ class FirebaseTalker {
                 switch (value.variable) {
                   case 'string':
 
-                    $casted = ($source !== undefined && $source !== null) && $source.toString();
+                    $casted = (($source !== undefined && $source !== null) || value.required)
+                      && $source.toString();
 
                     if (value.autoCast && $casted) {
                       $source = $casted;
@@ -356,7 +357,9 @@ class FirebaseTalker {
 
                     $casted = +$source;
 
-                    if (value.autoCast && !Number.isNaN($casted)) {
+                    if (value.autoCast 
+                      && (($source !== undefined && $source !== null) || value.required) 
+                      && !Number.isNaN($casted)) {
                       $source = $casted;
                     }
 
@@ -368,7 +371,8 @@ class FirebaseTalker {
 
                     $casted = !!$source;
 
-                    if (value.autoCast) {
+                    if (value.autoCast 
+                      && (($source !== undefined && $source !== null) || value.required)) {
                       $source = $casted;
                     }
 
@@ -381,7 +385,9 @@ class FirebaseTalker {
                       && !Array.isArray($source) 
                       && $source !== null;
 
-                    if (value.autoCast && !$isObject) {
+                    if (value.autoCast 
+                      && (($source !== undefined && $source !== null) || value.required) 
+                      && !$isObject) {
                       $source = { value: $source };
                       $isObject = true;
                     }
@@ -394,7 +400,9 @@ class FirebaseTalker {
                     $isArray = typeof $source === 'object'
                       && Array.isArray($source);
 
-                    if (value.autoCast && !$isArray) {
+                    if (value.autoCast 
+                      && (($source !== undefined && $source !== null) || value.required) 
+                      && !$isArray) {
                       $source = [$source];
                       $isArray = true;
                     }
