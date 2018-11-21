@@ -1,6 +1,7 @@
 /**
  * Require External Modules
  */
+const NodeCache = require('node-cache');
 const firebaseAdmin = require('firebase-admin');
 
 /**
@@ -15,16 +16,23 @@ class FireDataModeler {
   /**
    * @constructor
    */
-  constructor() {
+  constructor({ cacheable = true, ttl = 300 } = {}) {
 
     /**
      * Initialize the Bindings and
      * the Model Objects
      */
-    _bindings.set(this, {});
     _models.set(this, {});
     _functions.set(this, {});
     _filters.set(this, {});
+
+    /**
+     * If Modeler is Cacheable
+     * build the Cache
+     */
+    if (cacheable) {
+      _cache.set(this, new NodeCache({ stdTTL: ttl, checkperiod: 300 }));
+    }
 
   }
 
@@ -286,7 +294,12 @@ class FireDataModeler {
    * @param {Array} [$configuration.pathReplacers=[]] An array of Path Replacers functions
    * 
    */
-  Talker({ credential, databaseURL, adminInstance, pathReplacers = [] } = {}) {
+  Talker({ 
+    credential,
+    databaseURL,
+    adminInstance,
+    options: { pathReplacers = [], cacheable, ttl, forceRepars } = {}
+  } = {}) {
 
     /**
      * Check Credential is an Object
@@ -303,17 +316,22 @@ class FireDataModeler {
     }
 
     /**
+     * Build Options
+     */
+    const options = { pathReplacers, cacheable, ttl, forceRepars };
+
+    /**
      * If there is an admin Instance
      * then save it
      */
     if (adminInstance) {
-      return new FirebaseTalker(this, adminInstance.database(), pathReplacers);
+      return new FirebaseTalker(this, adminInstance.database(), options);
     }
 
     return new FirebaseTalker(this, firebaseAdmin.initializeApp({
       credential: firebaseAdmin.credential.cert(credential),
       databaseURL
-    }).database(), pathReplacers);
+    }).database(), options);
 
   }
 

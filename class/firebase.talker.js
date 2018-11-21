@@ -2,7 +2,7 @@
 /**
  * Require External Modules
  */
-const _dataReparse = new WeakMap();
+const _options = new WeakMap();
 
 /**
  * Load Utils
@@ -26,7 +26,11 @@ class FirebaseTalker {
    * @param {Object} admin Firebase Admin Object
    * @param {Array} pathReplacers Replacers for Firebase Reference Path
    */
-  constructor(DataModeler, admin, pathReplacers = [], forceReparse = false) {
+  constructor(
+    DataModeler,
+    admin,
+    { pathReplacers = [], forceReparse = false, cacheable, ttl } = {}
+  ) {
 
     /**
      * Save the Data Modeler
@@ -35,7 +39,41 @@ class FirebaseTalker {
     _dataModeler.set(this, DataModeler);
     _firebaseAdmin.set(this, admin);
     _pathReplacers.set(this, Array.isArray(pathReplacers) ? pathReplacers : []);
-    _dataReparse.set(this, forceReparse);
+
+    /**
+     * Get Cacheable
+     */
+    const modelerCache = _cache.get(DataModeler);
+    let talkerCacheable;
+    let talkerTTL;
+
+    /**
+     * If modeler cache is undefined,
+     * it means that cache is disabled
+     * from Modeler instance
+     */
+    if (modelerCache === undefined) {
+      talkerCacheable = false;
+      talkerTTL = false;
+    }
+
+    /**
+     * Else, copy the cache options
+     * or set the local value
+     */
+    else {
+      talkerCacheable = cacheable === undefined ? true : !!cacheable;
+      talkerTTL = typeof ttl !== 'number' ? modelerCache.options.stdTTL : ttl;
+    }
+
+    /**
+     * Save options
+     */
+    _options.set(this, {
+      forceReparse,
+      cacheable  : talkerCacheable,
+      ttl        : talkerTTL
+    });
 
   }
 
@@ -187,7 +225,7 @@ class FirebaseTalker {
     _dataModeler.delete(this);
     _firebaseAdmin.delete(this);
     _pathReplacers.delete(this);
-    _dataReparse.delete(this);
+    _options.delete(this);
 
   }
 
@@ -2849,27 +2887,69 @@ class FirebaseTalker {
 
 
 /**
+ * @function isCachable
+ * 
+ * @param {Object} $this Firebase Talker Instance
+ * 
+ * @description
+ * Check if current instance is Cachable
+ * 
+ */
+function isCachable($this) {
+  return !!_options.get($this).cacheable;
+}
+
+
+/**
  * @function loadModel
  * 
  * @param {Object} $this The Firebase Talker Instance
  * @param {String} $name Model Nmae to Load
  * 
+ * @description
+ * Load a model by name
  */
 function loadModel($this, $name) {
   return _models.get(_dataModeler.get($this))[$name];
 }
 
 
+/**
+ * @function loadFunction
+ * 
+ * @param {Object} $this The Firebase Talker Instance
+ * @param {String} $name Model Nmae to Load
+ * 
+ * @description
+ * Load a function by name
+ */
 function loadFunction($this, $name) {
   return _functions.get(_dataModeler.get($this))[$name];
 }
 
 
+/**
+ * @function loadFilter
+ * 
+ * @param {Object} $this The Firebase Talker Instance
+ * @param {String} $name Model Nmae to Load
+ * 
+ * @description
+ * Load a filter by name
+ */
 function loadFilter($this, $name) {
   return _filters.get(_dataModeler.get($this))[$name];
 }
 
 
+/**
+ * @function clonePathsArray
+ * 
+ * @param {Object[]} $paths Paths to Clone
+ * 
+ * @description
+ * Clone the path array
+ */
 function clonePathsArray($paths = []) {
   return new FireDataObject($paths).$clone().$build();
 }
@@ -2879,6 +2959,9 @@ function clonePathsArray($paths = []) {
  * @function buildSourceString
  * 
  * @param {String|Array|Object} $source Normalize Source
+ * 
+ * @description
+ * Transform any variable into string
  * 
  * @return {String}
  */

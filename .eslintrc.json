@@ -25,7 +25,7 @@
       "_dataModeler": false,
       "_firebaseAdmin": false,
       "_pathReplacers": false,
-      "_bindings": false,
+      "_cache": false,
       "_models": false,
       "_functions": false,
       "_filters": false
