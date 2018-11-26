@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `2.0.0` - 2018-11-26
+### `Added`
+- [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) Added symbol `&` into FireData Type Declaration string to define an expresion that has to be evaluated during parsing
+
+### `Changed`
+- [`<5e5632c>`](https://github.com/marcocavanna/FireDataModeler/commit/5e5632c3f2f36ff94b6149623da4bff58f8a045a) Value are AutoCasted to the desired type only of they are required
+- [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) When using functions parameters in Model Declaration: Parameters have now to be placed in Invoke Parenthesis
+- [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) Required field now will be checked at the end of the Parsing function
+- [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) `$get` Talker Function now could get more then a child, passing multiple IDs (Array) as argument
+- [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) `$update` Talker Function now could update more then a child, passing as first parameters an Object containing as key the ID that must be updated:
+  ```js
+    Talker.$update('Contact')({
+      id1: { name: 'The First' },
+      id2: { name: 'The Second' }
+    })
+  ```
+
 ## `1.2.9` - 2018-11-20
 ### `Added`
 - [`<ae9b0c2>`](https://github.com/marcocavanna/FireDataModeler/commit/ae9b0c2b82958ce222742c706c6f41ecb583b967) `$parsePath` function added to Talker to return a parsed path string using replacers
