@@ -1,6 +1,11 @@
 class FireDataObject {
 
   constructor($starting) {
+
+    if ($starting instanceof FireDataObject) {
+      return $starting.$clone().$build();
+    }
+
     this._keys = [..._mapObjectKeys($starting)];
   }
 
@@ -519,6 +524,8 @@ class FireDataObject {
    * 
    * @description
    * Return a clone FireDataObject
+   * 
+   * @returns {FireDataObject}
    * 
    */
   $clone() {

@@ -16,7 +16,7 @@ class FireDataModeler {
   /**
    * @constructor
    */
-  constructor({ cacheable = true, ttl = 300 } = {}) {
+  constructor({ cacheable = false, ttl = 300 } = {}) {
 
     /**
      * Initialize the Bindings and
@@ -298,7 +298,7 @@ class FireDataModeler {
     credential,
     databaseURL,
     adminInstance,
-    options: { pathReplacers = [], cacheable, ttl, forceRepars } = {}
+    options: { cacheable, ttl, forceRepars } = {}
   } = {}) {
 
     /**
@@ -318,7 +318,7 @@ class FireDataModeler {
     /**
      * Build Options
      */
-    const options = { pathReplacers, cacheable, ttl, forceRepars };
+    const options = { cacheable, ttl, forceRepars };
 
     /**
      * If there is an admin Instance
@@ -415,12 +415,41 @@ function buildModel({ $name, $constructor, $isExtractor = false, $isParser = fal
    */
   const $keysMapping = new FireDataObject(!$isExtractor ? model : extract);
 
+  const _requiredKey    = [];
+  const _optionalKey    = [];
+  const _primitiveKey   = [];
+  const _modelKey       = [];
+  const _referencedKey  = [];
+  const _bindedKey      = [];
+  const _filteredKey    = [];
+  const _functionKey    = [];
+
   /**
    * If Model is not an extractor
    * then must map the model value
    */
   if (!$isExtractor) {
-    $keysMapping.$map(({ path, value }) => ({ path, value: parseDataType(value) }));
+    /**
+     * Get Key Map
+     */
+    $keysMapping
+      .$map(({ path, value }) => ({ path, value: parseDataType(value, $name, path) }))
+
+      /**
+       * Build Key Arrays
+       */
+      .$each(({ path, value }) => {
+        /**
+         * Place key in right array
+         */
+        if (value.isModel) _modelKey.push({ path, value });
+        if (value.isFunction) _functionKey.push({ path, value });
+        if (value.isPrimitive) _primitiveKey.push({ path, value });
+        if (value.filters.length) _filteredKey.push({ path, value });
+        if (value.required) _requiredKey.push({ path, value });
+        else _optionalKey.push({ path, value });
+
+      });
   }
 
   /**
@@ -492,6 +521,14 @@ function buildModel({ $name, $constructor, $isExtractor = false, $isParser = fal
    */
   const $newModel = {
     paths,
+    _requiredKey,
+    _optionalKey,
+    _primitiveKey,
+    _modelKey,
+    _referencedKey,
+    _bindedKey,
+    _filteredKey,
+    _functionKey,
     _extractor  : $isExtractor ? model                            : false,
     _parser     : !!$isParser,
     _keys       : $keysMapping,

@@ -7,6 +7,8 @@
     "url": "https://github.com/marcocavanna/FireDataModeler/issues"
   },
   "dependencies": {
+    "acorn": "^6.0.4",
+    "acorn-globals": "^4.3.0",
     "firebase-admin": "^6.0.0",
     "node-cache": "^4.2.0"
   },

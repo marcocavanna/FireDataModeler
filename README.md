@@ -21,12 +21,18 @@ You can apply validators and formatters to your data, that will be executed alwa
     - [2. Require](#2-require)
     - [3. Create a Model](#3-create-a-model)
     - [4. Add Data](#4-add-data)
-- [FireData Type Definition](#firedata-type-definition)
+- [Version 2.0 Notable Changes](#version-20-notable-changes)
+    - [Under the Hood](#under-the-hood)
+    - [FireData Type Definition](#firedata-type-definition)
+    - [Sneak Peek](#sneak-peek)
+- [FireData Type Definition](#firedata-type-definition-1)
   - [Declaring JavaScript Variable Type](#declaring-javascript-variable-type)
     - [Variable AutoCast](#variable-autocast)
   - [Using Model as FireData Type](#using-model-as-firedata-type)
   - [Using Function as FireData Type](#using-function-as-firedata-type)
+      - [Version 1.2.9](#version-129)
   - [Filter Data](#filter-data)
+      - [Version 1.2.9](#version-129-1)
 - [Modeler](#modeler)
   - [$model(_name_, _constructor_)](#modelname-constructor)
     - [`model` {Object}](#model-object)
@@ -228,6 +234,32 @@ ContactAdder({ name: 150 })
   })
 ```
 
+## Version 2.0 Notable Changes
+The last released versione there a lot of big change:
+
+#### Under the Hood
+The [`Talker`](#talker) class has been totally rewrited and has loss more then 400 lines of code (from 3000+ to 2550+) and 30 kilobytes of code smaller (-30%).
+
+The major Talker function `$parse` (the function that compile your object before send it to Firebase) is totally refactored.
+
+#### FireData Type Definition
+The parser for Type Definition now recognize functions in the JavaScript Syntax `FunctionName(<params1>, <params2>, ...)` with complete params support; functions will now be invoke in a complete safe environment and if an error occured `null` will be returned without break the process.
+
+A new symbol has been introduced `&` to directly evaluate an expression without set it with `Modeler.$function()` syntax:
+```js
+  Modeler.$model('Contact', {
+    model: {
+      name: 'String',
+      surname: 'String',
+      displayName: '&(`${name} ${surname}`)'
+    },
+    // ...
+  })
+```
+
+#### Sneak Peek
+A system of Caching has been introduced but instable at the moment and could not be used at the moment. We are working a lot to let it work in the next release.
+
 ## FireData Type Definition
 The `FireData Type` is the definition of the type of data that must be written into the object before sending it to Firebase.
 
@@ -331,7 +363,7 @@ This will be translated in
 
 The function will be invoked with the `this` bound to the parsed model and can have multiple parameters that will be used as function arguments. The last argument appended is always an instance of the [`Talker`](#talker).
 
-Arguments could be specified after function invoke separated from function using `:`
+Arguments could be specified in the same mode that you do in JavaScript code
 
 ```js
 /**
@@ -340,7 +372,7 @@ Arguments could be specified after function invoke separated from function using
 {
   name: '?String',
   dogs: '?Array',
-  hasDogs: '=HasDogs():dogs'
+  hasDogs: '=HasDogs(dogs)'
 }
 
 /**
@@ -350,14 +382,17 @@ Modeler
   .$function('HasDogs', ($dogs = []) => !!$dogs.length);
 ```
 
+##### Version 1.2.9
+At Version 1.2.9, params had to be writed separated from function using `:`. This notation type has been depracted and must not be used anymore.
+
 ### Filter Data
-A filter is a function executed after the field parsing. This is the last option to append to the field declaration, it is composed by the filter name. All filters arguments (separated from name using `:` ) are passed to filter function as __String__
+A filter is a function executed after the field parsing. This is the last option to append to the field declaration, it is composed by the filter name. All filters arguments (separated from name using `:` ) are passed to filter function
 ```js
 /**
  * In Model Constructor
  */
 {
-  date: '?Number|startOf:day'
+  date: `?Number|startOf:'day'`
 }
 
 /**
@@ -380,6 +415,9 @@ Modeler
 ```
 
 The function could also return a Promise, fulfilled with the result to store into the field: in this case, __Modeler__ will wait until function are resolved before uploading data to Database.
+
+##### Version 1.2.9
+At Version 1.2.9, filters params was converted in String. From 2.0 they are passed as variable.
 
 ## Modeler
 
@@ -632,7 +670,7 @@ Modeler
   .$model('SomeModel', {
     model: {
       now: '>Now()',
-      tomorrow: '>Tomorrow():now'
+      tomorrow: '>Tomorrow(now)'
     },
     paths: {
       ...
