@@ -1467,10 +1467,10 @@ class FirebaseTalker {
        * Else if $id field is a string, then is a single updating
        * data invoke
        */
-      else if (typeof $id === 'string' && $hasID && isObject($data)) {
+      else if (typeof $id === 'string' && $hasID) {
         _IDs = [$id];
         _isSingle = true;
-        _allUpdatingData = { [$id]: $data };
+        _allUpdatingData = { [$id]: isObject($data) ? $data : {} };
       }
 
       /**
@@ -1620,12 +1620,6 @@ class FirebaseTalker {
          * Set the Model as Builded
          */
         _buildedModels.push($modelName);
-
-        // console.log({
-        //   _old      : _oldModels[$modelName].$keyMap(),
-        //   _updated  : _parsedModels[$modelName].$keyMap(),
-        //   _diff     : _diffModels[$modelName].$keyMap()
-        // });
 
         /**
          * For Each paths, build the data model,
