@@ -593,7 +593,7 @@ class FirebaseTalker {
          * array of object in firebase style { id1: {}, id2: {} ... }
          * and build an array
          */
-        const _normalizedArray = !isGetter && _newSource
+        const _normalizedArray = !isGetter && Array.isArray(_newSource)
           ? _normalizeFirebaseArray(_newSource)
           : _normalizeFirebaseArray($source);
 
