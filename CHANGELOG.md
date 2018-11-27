@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## `2.0.1` - 2018-11-27
+### `Fixed`
+- [`<3e4f760>`](https://github.com/marcocavanna/FireDataModeler/commit/3e4f7608f95dfed42ca55bec28f4ab1218239b01) Fixed an error that caused unexpected behaviour while updating data
+- [`<bcea4a6>`](https://github.com/marcocavanna/FireDataModeler/commit/bcea4a64579c9689529dc3e1bda0cc274eb04f78) Fixed an error while parsing Object/Array on Array Data Model
+- [`<d8e7563>`](https://github.com/marcocavanna/FireDataModeler/commit/d8e7563354bdd7e61ff8da32c0731a7a3bc170ec) Fixed an error that occured while parsing Empty Object or Null/Undefined Data. Parsing Empty Object now will return `null`
+
 ## `2.0.0` - 2018-11-26
 ### `Added`
 - [`<6617ce3>`](https://github.com/marcocavanna/FireDataModeler/commit/6617ce34c6fa59bff232b167c5454dce0efa8dd2) Added symbol `&` into FireData Type Declaration string to define an expresion that has to be evaluated during parsing
