@@ -274,13 +274,6 @@ class FirebaseTalker {
       });
 
       /**
-       * If data is null, then return null too
-       */
-      if ($data === null) {
-        return null;
-      }
-
-      /**
        * Get Source as FireDataObject
        */
       const $dataSource = $data instanceof FireDataObject
@@ -294,6 +287,13 @@ class FirebaseTalker {
       const $newDataSource = newData instanceof FireDataObject
         ? newData
         : new FireDataObject(newData);
+
+      /**
+       * If no Data, return null
+       */
+      if ($dataSource.$isEmpty()) {
+        return null;
+      }
 
       /**
        * Build Globals for Evaluating
